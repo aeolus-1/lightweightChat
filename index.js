@@ -64,7 +64,7 @@ io.on('connection', async(socket) => {
 })
 
 
-server.listen(process.env.PORT || 8085, () => {
-    console.log('listxwening on *:8085');
+server.listen(process.env.PORT || 8086, () => {
+    console.log('listening on *:8086');
 })
 
