@@ -53,7 +53,6 @@ function parseMsgString(msg) {
     return `[${(new Date(msg.timestamp)).toLocaleDateString()} ${(new Date(msg.timestamp)).toLocaleTimeString()}] [?] [${msg.username} (${msg.id})] ${msg.msg}`
 }
 
-
 function postMessageToDiscord(msg) {
     let msgString = parseMsgString(msg)
     var params = {
@@ -61,7 +60,7 @@ function postMessageToDiscord(msg) {
         avatar_url: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.csr-online.net%2Fwp-content%2Fuploads%2F2020%2F06%2Fpeople-speech-bubbles-chatting-communication-concept-vector-illustration-141568372.jpg",
         content: msgString,
     }
-    fetch('URL', {
+    fetch("https://discord.com/api/webhooks/1245304028624326698/vbQGegNrDrj_Wrn0pCef01pFz3aDaw2njcjVVKI38KK1T2C8w2xNYdX2rsU_0aIzQJZN", {
         method: "POST",
         headers: {
             'Content-type': 'application/json'
