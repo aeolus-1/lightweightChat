@@ -18,7 +18,8 @@ const io = require("socket.io")(server, {
 app.use(express.static('public'))
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '/index.html'));
+    console.log("hey")
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 
@@ -66,7 +67,7 @@ io.on('connection', async(socket) => {
 })
 
 
-server.listen(process.env.PORT || 8086, () => {
-    console.log('listening on *:8086');
+server.listen(8414, () => {
+    console.log('listening on *:8414');
 })
 
