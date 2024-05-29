@@ -14,8 +14,11 @@ const io = require("socket.io")(server, {
         origin: "*"
     }
 });
+
+app.use(express.static('public'))
+
 app.get('/', (req, res) => {
-    res.send('server');
+    res.sendFile(path.join(__dirname, '/index.html'));
 });
 
 
