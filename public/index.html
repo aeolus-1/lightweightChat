@@ -135,7 +135,7 @@ message {
         }
 
         function submitToChat(msg) {
-            //socket.emit("submitChat", JSON.stringify({msg:msg}))
+            socket.emit("submitChat", JSON.stringify({msg:msg}))
             appendToChat(msg)
         }
 
