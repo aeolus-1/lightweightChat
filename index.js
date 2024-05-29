@@ -4,9 +4,19 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 
+/*
+    message {
+        msg: str
+        username: str
+        id: int (rand)
+        timestamp: int (timestamp)
+    }
+*/
 
 const HISTORY_LENGTH = 40,
-      USE_CLIENT_TIMESTAMPS = false
+      USE_CLIENT_TIMESTAMPS = false,
+
+      LOG_TO_DISCORD = true
 
 
 const io = require("socket.io")(server, {
@@ -28,9 +38,36 @@ function getHistory() {
 }
 function appendHistory(msg) {
     chatHistory.push(msg)
+    if (LOG_TO_DISCORD) {
+        postMessageToDiscord(msg)
+    }
+
+
+
     if (chatHistory.length>HISTORY_LENGTH) {
         chatHistory.shift()
     }
+}
+
+function parseMsgString(msg) {
+    return `[${(new Date(msg.timestamp)).toLocaleDateString()} ${(new Date(msg.timestamp)).toLocaleTimeString()}] [?] [${msg.username} (${msg.id})] ${msg.msg}`
+}
+
+
+function postMessageToDiscord(msg) {
+    let msgString = parseMsgString(msg)
+    var params = {
+        username: "Chat Logger",
+        avatar_url: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.csr-online.net%2Fwp-content%2Fuploads%2F2020%2F06%2Fpeople-speech-bubbles-chatting-communication-concept-vector-illustration-141568372.jpg",
+        content: msgString,
+    }
+    fetch('URL', {
+        method: "POST",
+        headers: {
+            'Content-type': 'application/json'
+        },
+        body: JSON.stringify(params)
+    })
 }
 
 
