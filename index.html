@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sandy and warm beaches</title>
+    <style>
+
+        .full {
+            width:100%;
+            height: calc(100vh - 50px);
+        }
+        .sub_section {
+            display: inline-block;
+        }
+
+        .msg_input {
+            width: 50vw;
+        }
+        .chat_id {
+            font-size: xx-small;
+            margin-bottom: 0%;
+        }
+        .chat_msg_section {
+            margin-right: 15px;
+            display: inline-block;
+            word-wrap: break-word;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="full chat_display">
+        <div class="chat_container" id="chat_container">
+            
+        </div>
+    </div>
+    <div class="chat_submission">
+        <div class="sub_section">
+            username<br>
+            <input class="name_input" type="text">
+        </div>
+        <div class="sub_section">
+            message<br>
+            <input class="msg_input" type="text">
+        </div>
+        <div class="sub_section">
+            <button id="submission">Submit</button>
+        </div>
+    </div>
+
+    <script>
+/*
+message {
+    msg;
+    user;
+    id;
+    timestamp;
+}
+*/
+        const SERVER_URL = "https://chat.xl83.dev"
+
+
+        function appendToChat(msg) {
+            var div = document.createElement('div'),
+            htmlString = `<div class="chat_msg">
+                <div class="chat_msg_section">
+                    <span id="time">14:30</span>
+                </div>
+                <div class="chat_msg_section">
+                    <span class="chat_id">
+                        <span id="id">15673478</span>
+                    </span><br>
+                    <b>
+                        <span id="username">reef</span>
+                    </b>
+                </div>
+                <div class="chat_msg_section">
+                    <span id="msg">messsage messsage messsage messsage messsage messsage </span>
+                </div>
+            </div>`
+            div.innerHTML = htmlString.trim();
+            div = div.firstChild
+            console.log(div)
+
+            div.children[0].children[0].textContent = msg.timestamp
+            div.children[1].children[0].children[0].textContent = msg.id
+            div.children[1].children[2].children[0].textContent = msg.username
+            div.children[2].children[0].textContent = msg.msg
+            
+        
+            document.getElementById("chat_container").appendChild(div)
+        }
+
+        function submitToChat(msg) {
+            socket.emit("submitChat", JSON.stringify({msg:msg}))
+        }
+
+
+        document.getElementById("submission").onclick = ()=>{
+            var msg = {
+                msg:document.getElementsByClassName("msg_input")[0].value,
+                username:document.getElementsByClassName("name_input")[0].value,
+                id: 0,
+                timestamp:(new Date()).getTime(),
+            }
+
+            submitToChat(msg)
+        }
+
+
+
+
+        const socket = io(SERVER_URL, {
+            reconnection: true,
+        })
+
+        socket.on("appendChat", (data)=>{
+            data = JSON.parse(data)
+            
+            for(let i=0;i<data.msgs.length;i++) {
+                appendToChat(data.msgs[i])
+            }
+            
+        })
+
+    </script>
+</body>
+</html>
