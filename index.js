@@ -1,6 +1,3 @@
-
-var exec = require('child_process').exec;
-require('dotenv').config()
 const process = require("process")
 const express = require('express');
 const app = express();
