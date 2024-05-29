@@ -147,6 +147,7 @@ message {
                 id: 0,
                 timestamp:(new Date()).getTime(),
             }
+            document.getElementsByClassName("msg_input")[0].value = ""
 
             submitToChat(msg)
         }
