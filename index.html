@@ -5,10 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>sandy and warm beaches</title>
     <style>
+        body {
+            overflow: hidden;
+            line-height: 95%;
+        }
 
         .full {
             width:100%;
-            height: calc(100vh - 50px);
+            height: calc(100vh - 75px);
         }
         .sub_section {
             display: inline-block;
@@ -18,8 +22,8 @@
             width: 50vw;
         }
         .chat_id {
-            font-size: xx-small;
-            margin-bottom: 0%;
+            font-size: 6px;
+            margin-bottom: -10px;
         }
         .chat_msg_section {
             margin-right: 15px;
@@ -27,7 +31,23 @@
             word-wrap: break-word;
         }
 
+        .chat_container {
+            overflow-y: scroll;
+            max-height: calc(100vh - 75px);
+        }
+        .chat_msg {
+            margin-top: 1px;
+        }
+        .name_display {
+            line-height: 70%;
+        }
+        .chat_submission {
+            background-color: white;
+            height: 60px;
+        }
+
     </style>
+    <script src="socket.io.min.js"></script>
 </head>
 <body>
     <div class="full chat_display">
@@ -35,6 +55,7 @@
             
         </div>
     </div>
+    <hr>
     <div class="chat_submission">
         <div class="sub_section">
             username<br>
@@ -42,7 +63,7 @@
         </div>
         <div class="sub_section">
             message<br>
-            <input class="msg_input" type="text">
+            <input class="msg_input" id="msg_input" type="text">
         </div>
         <div class="sub_section">
             <button id="submission">Submit</button>
@@ -67,11 +88,11 @@ message {
                 <div class="chat_msg_section">
                     <span id="time">14:30</span>
                 </div>
-                <div class="chat_msg_section">
+                <div class="chat_msg_section name_display">
                     <span class="chat_id">
                         <span id="id">15673478</span>
                     </span><br>
-                    <b>
+                    <b class="chat_username">
                         <span id="username">reef</span>
                     </b>
                 </div>
@@ -83,17 +104,22 @@ message {
             div = div.firstChild
             console.log(div)
 
-            div.children[0].children[0].textContent = msg.timestamp
+            let date = new Date(msg.timestamp),
+                time = date.toLocaleTimeString()
+
+            div.children[0].children[0].textContent = time
             div.children[1].children[0].children[0].textContent = msg.id
             div.children[1].children[2].children[0].textContent = msg.username
             div.children[2].children[0].textContent = msg.msg
             
         
             document.getElementById("chat_container").appendChild(div)
+            document.getElementById("chat_container").scrollTop += div.offsetHeight*1.4
         }
 
         function submitToChat(msg) {
-            socket.emit("submitChat", JSON.stringify({msg:msg}))
+            //socket.emit("submitChat", JSON.stringify({msg:msg}))
+            appendToChat(msg)
         }
 
 
@@ -107,22 +133,51 @@ message {
 
             submitToChat(msg)
         }
-
-
-
-
-        const socket = io(SERVER_URL, {
-            reconnection: true,
-        })
-
-        socket.on("appendChat", (data)=>{
-            data = JSON.parse(data)
-            
-            for(let i=0;i<data.msgs.length;i++) {
-                appendToChat(data.msgs[i])
+        document.getElementById("msg_input").addEventListener("keyup",(e)=>{
+            if (e.code=="Enter"){
+                document.getElementById("submission").click()
             }
-            
         })
+
+
+
+
+        if (location.protocol!="file:") {
+            const socket = io(SERVER_URL, {
+                reconnection: true,
+            })
+
+            socket.on("appendChat", (data)=>{
+                data = JSON.parse(data)
+                
+                for(let i=0;i<data.msgs.length;i++) {
+                    appendToChat(data.msgs[i])
+                }
+                
+            })
+
+            
+        } else {
+            for(let i=0;i<100;i++) {
+                function stringGen(len) {
+                    var text = "";
+                    
+                    var charset = "abcdefghijklmnopqrstuvwxyz0123456789";
+                    
+                    for (var i = 0; i < len; i++)
+                      text += charset.charAt(Math.floor(Math.random() * charset.length));
+                    
+                    return text;
+                  }
+                  
+                appendToChat({
+                    id:Math.floor(Math.random()*10e8),
+                    timestamp:(new Date()).getTime(),
+                    username:stringGen(5),
+                    msg:stringGen(10+(Math.random()*60)),
+                })
+            }
+        }
 
     </script>
 </body>
