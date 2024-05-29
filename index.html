@@ -9,6 +9,9 @@
             overflow: hidden;
             line-height: 95%;
         }
+        ::-webkit-scrollbar {
+            display: none;
+        }
 
         .full {
             width:100%;
@@ -34,6 +37,12 @@
         .chat_container {
             overflow-y: scroll;
             max-height: calc(100vh - 75px);
+            bottom: 0%;
+            position: absolute;
+            width: 100%;
+        }
+        .chat_display {
+            position: relative;
         }
         .chat_msg {
             margin-top: 1px;
@@ -59,7 +68,7 @@
     <div class="chat_submission">
         <div class="sub_section">
             username<br>
-            <input class="name_input" type="text">
+            <input name="username" class="name_input" id="name_input" type="text">
         </div>
         <div class="sub_section">
             message<br>
@@ -80,6 +89,9 @@ message {
 }
 */
         const SERVER_URL = "https://chat.xl83.dev"
+
+        document.getElementById("name_input").value = localStorage.getItem("username")||""
+        document.getElementById("name_input").onchange = ()=>{localStorage.setItem("username",document.getElementById("name_input").value)}
 
 
         function appendToChat(msg) {
@@ -158,7 +170,7 @@ message {
 
             
         } else {
-            for(let i=0;i<100;i++) {
+            for(let i=0;i<0;i++) {
                 function stringGen(len) {
                     var text = "";
                     
