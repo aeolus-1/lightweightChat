@@ -5,7 +5,8 @@ const http = require('http');
 const server = http.createServer(app);
 
 
-const HISTORY_LENGTH = 40
+const HISTORY_LENGTH = 40,
+      USE_CLIENT_TIMESTAMPS = false
 
 
 const io = require("socket.io")(server, {
@@ -34,6 +35,7 @@ function verifyMsg(msg, socket) {
     msg.id = socket.chat_id
     msg.msg = msg.msg.substring(0,300)
     msg.username = msg.username.substring(0,30)
+    msg.timestamp = (USE_CLIENT_TIMESTAMPS)?msg.timestamp:(new Date()).getTime()
     return msg
 }
 
