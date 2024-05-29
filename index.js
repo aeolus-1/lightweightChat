@@ -85,7 +85,8 @@ io.on('connection', async(socket) => {
     socket.chat_id = Math.floor(Math.random()*10e8)
    
     socket.emit("appendChat", JSON.stringify({
-        msgs:getHistory()
+        msgs:getHistory(),
+        isHistoryMsgs:true,
     }))
     
     socket.on('submitChat', (data) => {

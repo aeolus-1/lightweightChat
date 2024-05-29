@@ -95,6 +95,8 @@ message {
 */
         const SERVER_URL = "https://chat.xl83.dev"
 
+        var hasReceivedHistory = false
+
         document.getElementById("name_input").value = localStorage.getItem("username")||""
         document.getElementById("name_input").onchange = ()=>{localStorage.setItem("username",document.getElementById("name_input").value)}
 
@@ -167,6 +169,10 @@ message {
 
         socket.on("appendChat", (data)=>{
             data = JSON.parse(data)
+
+            if (data.isHistoryMsgs) {
+                if (hasReceivedHistory) return 0
+            }
             
             for(let i=0;i<data.msgs.length;i++) {
                 appendToChat(data.msgs[i])
