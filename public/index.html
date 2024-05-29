@@ -32,6 +32,7 @@
             margin-right: 15px;
             display: inline-block;
             word-wrap: break-word;
+            min-width: 50px;
         }
 
         .chat_container {
@@ -52,7 +53,11 @@
         }
         .chat_submission {
             background-color: white;
-            height: 60px;
+            height: 50px;
+        }
+
+        #msg {
+            font-size: large;
         }
 
     </style>
@@ -154,41 +159,19 @@ message {
 
 
 
-        if (location.protocol!="file:") {
-            const socket = io(SERVER_URL, {
-                reconnection: true,
-            })
+        
+        const socket = io(SERVER_URL, {
+            reconnection: true,
+        })
 
-            socket.on("appendChat", (data)=>{
-                data = JSON.parse(data)
-                
-                for(let i=0;i<data.msgs.length;i++) {
-                    appendToChat(data.msgs[i])
-                }
-                
-            })
+        socket.on("appendChat", (data)=>{
+            data = JSON.parse(data)
             
-        } else {
-            for(let i=0;i<0;i++) {
-                function stringGen(len) {
-                    var text = "";
-                    
-                    var charset = "abcdefghijklmnopqrstuvwxyz0123456789";
-                    
-                    for (var i = 0; i < len; i++)
-                      text += charset.charAt(Math.floor(Math.random() * charset.length));
-                    
-                    return text;
-                  }
-                  
-                appendToChat({
-                    id:Math.floor(Math.random()*10e8),
-                    timestamp:(new Date()).getTime(),
-                    username:stringGen(5),
-                    msg:stringGen(10+(Math.random()*60)),
-                })
+            for(let i=0;i<data.msgs.length;i++) {
+                appendToChat(data.msgs[i])
             }
-        }
+            
+        })
 
     </script>
 </body>
