@@ -100,7 +100,7 @@ function verifyMsg(msg, socket, cmdKey) {
     lastMsgs = lastMsgs.slice(lastMsgs.length-REPEATED_MESSAGES_LOOKBACK, lastMsgs.length)
     lastMsgs = lastMsgs.map((e)=>{return r(e.msg,e.id)})
 
-    if (lastMsgs.includes(r(msg.msg,e.id))) {
+    if (lastMsgs.includes(r(msg.msg,msg.id))) {
         return false
     }
 
