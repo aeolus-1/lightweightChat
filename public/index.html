@@ -65,7 +65,7 @@
         }
 
     </style>
-    <script src="/libs/socket.io.min.js"></script>
+    <script src="../public/libs/socket.io.min.js"></script>
 </head>
 <body>
     <div class="full chat_display">
@@ -193,6 +193,9 @@ message {
                             img.classList.add("chat_img")
                             div.appendChild(document.createElement("br"))
                             div.appendChild(img)
+                            img.onload = ()=>{
+                                document.getElementById("chat_container").scrollTop += img.offsetHeight*1.2
+                            }
                         }
                     })
                 }
@@ -201,6 +204,7 @@ message {
         
             document.getElementById("chat_container").appendChild(div)
             document.getElementById("chat_container").scrollTop += div.offsetHeight*1.4
+            
         }
 
         function submitToChat(msg) {
