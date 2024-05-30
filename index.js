@@ -133,6 +133,17 @@ class Commands {
                 msgs:[msg],
             }))
         },
+        "/ping":function(e, socket){
+            var msg = {
+                msg:"pong",
+                username:"SERVER",
+                id: 0,
+                timestamp:(new Date()).getTime(),
+            } 
+            socket.emit("appendChat", JSON.stringify({
+                msgs:[msg],
+            }))
+        },
         
     }
     static runText(text, socket, cmdKey, execute=true) {
