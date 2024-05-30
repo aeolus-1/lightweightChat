@@ -4,7 +4,7 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 const { createHash } = require('crypto');
-
+//
 var adminKey = "415f637bb8f7661bb08aa264dd85912ee539a1a639b294fda18bb5087fe914a0"
 /*
     message {
@@ -191,7 +191,7 @@ io.on('connection', async(socket) => {
 
 
     socket.on('updateUsername', (data) => {
-        usersOnline[socket.chat_id].username = data.substring(0,30)
+        if (usersOnline[socket.chat_id].username !=null) usersOnline[socket.chat_id].username = data.substring(0,30)
     })
     socket.on('submitChat', (data) => {
         // mine's more professional
