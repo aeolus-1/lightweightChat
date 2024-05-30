@@ -213,6 +213,7 @@ message {
 
 
         document.getElementById("submission").onclick = ()=>{
+            if (document.getElementsByClassName("msg_input")[0].value == null || document.getElementsByClassName("msg_input")[0].value.trim() === '') return
             var msg = {
                 msg:document.getElementsByClassName("msg_input")[0].value,
                 username:document.getElementsByClassName("name_input")[0].value,
