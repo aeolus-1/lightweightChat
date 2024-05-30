@@ -92,7 +92,7 @@ io.on('connection', async(socket) => {
     }))
     
     socket.on('submitChat', (data) => {
-        if (data.msg == null || data.msg.trim() === '') return
+        if (data.msg.msg == null || data.msg.msg.trim() === '') return
         data = JSON.parse(data)
         data.msg = verifyMsg(data.msg, socket)
 
