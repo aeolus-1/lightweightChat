@@ -191,7 +191,7 @@ io.on('connection', async(socket) => {
 
 
     socket.on('updateUsername', (data) => {
-        usersOnline[socket.chat_id].username = data.substring(0,30)
+        if (usersOnline[socket.chat_id].username !=null) usersOnline[socket.chat_id].username = data.substring(0,30)
     })
     socket.on('submitChat', (data) => {
         // mine's more professional
