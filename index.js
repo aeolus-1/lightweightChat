@@ -82,6 +82,13 @@ function normaliseString(string) {
 
 function verifyMsg(msg, socket) {
     msg.msg = msg.msg.substring(0,300)
+    msg.id = socket.chat_id
+    msg.username = msg.username.substring(0,30)
+    msg.timestamp = (USE_CLIENT_TIMESTAMPS)?msg.timestamp:(new Date()).getTime()
+
+    if (Commands.runText(msg.msg, socket)) {
+        return false
+    }
     
     if (msg.msg.trim().length<=0) {
         return false
@@ -92,17 +99,61 @@ function verifyMsg(msg, socket) {
     let lastMsgs = getHistory()
     lastMsgs = lastMsgs.slice(lastMsgs.length-REPEATED_MESSAGES_LOOKBACK, lastMsgs.length)
     lastMsgs = lastMsgs.map((e)=>{return r(e.msg,e.id)})
-    console.log(lastMsgs, msg.msg)
+
     if (lastMsgs.includes(r(msg.msg,e.id))) {
         return false
     }
 
-    msg.id = socket.chat_id
-    msg.username = msg.username.substring(0,30)
-    msg.timestamp = (USE_CLIENT_TIMESTAMPS)?msg.timestamp:(new Date()).getTime()
-
     
     return msg
+}
+
+class Commands {
+    static cmds = {
+        "\\void_cmd":function(e, socket){
+            
+        },
+        "\\command_with_input[":function(e, socket){
+            //e is the string after the [
+        },
+
+
+        "\\userlist":function(e, socket){
+            var text = "Current Users Online: \n"
+            for (const [key, value] of Object.entries(usersOnline)) {
+                text += `[${key}] ${value.username}\r\n \r\n`
+            }
+            var msg = {
+                msg:text,
+                username:"SERVER",
+                id: 0,
+                timestamp:(new Date()).getTime(),
+            } 
+            socket.emit("appendChat", JSON.stringify({
+                msgs:[msg],
+            }))
+        },
+        
+    }
+    static runText(text, socket, execute=true) {
+        var foundCmd = false,
+            parameter = text.slice(text.search(/\[/)+1, text.length),
+            cmdStr  = text.slice(0, ((text.search(/\[/)+1)||text.length+1))
+
+        console.log(parameter, cmdStr)
+        if (true) {
+            Object.keys(Commands.cmds).forEach(cmd => {
+                var cmdOb = Commands.cmds[cmd]
+                if (cmdStr == cmd) {
+                    foundCmd = true
+                    parameter = (parameter==undefined||parameter=="")?1:parameter
+                    if (execute) cmdOb(parameter, socket)
+                }
+            });
+        }
+
+        return foundCmd
+    }
 }
 
 
@@ -133,7 +184,7 @@ io.on('connection', async(socket) => {
             io.sockets.emit("appendChat", JSON.stringify({
                 msgs:[data.msg],
             }))
-            commandHandler(data.msg.msg, data.key)
+            //commandHandler(data.msg.msg, data.key)
         }
 
         
