@@ -82,6 +82,7 @@ function normaliseString(string) {
 
 function verifyMsg(msg, socket) {
     msg.msg = msg.msg.substring(0,300)
+    msg.id = socket.chat_id
     
     if (msg.msg.trim().length<=0) {
         return false
@@ -92,12 +93,11 @@ function verifyMsg(msg, socket) {
     let lastMsgs = getHistory()
     lastMsgs = lastMsgs.slice(lastMsgs.length-REPEATED_MESSAGES_LOOKBACK, lastMsgs.length)
     lastMsgs = lastMsgs.map((e)=>{return r(e.msg,e.id)})
-    console.log(lastMsgs, msg.msg)
-    if (lastMsgs.includes(r(msg.msg,e.id))) {
+    console.log(lastMsgs, r(msg.msg, msg.id))
+    if (lastMsgs.includes(r(msg.msg,msg.id))) {
         return false
     }
 
-    msg.id = socket.chat_id
     msg.username = msg.username.substring(0,30)
     msg.timestamp = (USE_CLIENT_TIMESTAMPS)?msg.timestamp:(new Date()).getTime()
 
