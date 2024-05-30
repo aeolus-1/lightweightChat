@@ -77,6 +77,9 @@ function verifyMsg(msg, socket) {
     msg.msg = msg.msg.substring(0,300)
     msg.username = msg.username.substring(0,30)
     msg.timestamp = (USE_CLIENT_TIMESTAMPS)?msg.timestamp:(new Date()).getTime()
+    if (msg.msg.trim().length<=0) {
+        return false
+    }
     return msg
 }
 
@@ -95,12 +98,15 @@ io.on('connection', async(socket) => {
         if (data.msg == null || data.msg.trim() === '') return
         data = JSON.parse(data)
         data.msg = verifyMsg(data.msg, socket)
+        if (data.msg) {
+            appendHistory(data.msg)
 
-        appendHistory(data.msg)
+            io.sockets.emit("appendChat", JSON.stringify({
+                msgs:[data.msg],
+            }))
+        }
 
-        io.sockets.emit("appendChat", JSON.stringify({
-            msgs:[data.msg],
-        }))
+        
 
     });
 
