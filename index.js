@@ -18,7 +18,9 @@ var adminKey = "415f637bb8f7661bb08aa264dd85912ee539a1a639b294fda18bb5087fe914a0
 const HISTORY_LENGTH = 40,
       USE_CLIENT_TIMESTAMPS = false,
 
-      LOG_TO_DISCORD = true
+      LOG_TO_DISCORD = true,
+
+      REPEATED_MESSAGES_LOOKBACK = 3 // number of messages looked back to see if the message is a repeat
 
 
 const io = require("socket.io")(server, {
@@ -73,15 +75,29 @@ function postMessageToDiscord(msg) {
     })
 }
 
+function normaliseString(string) {
+    return string.trim().toLowerCase()
+    
+}
 
 function verifyMsg(msg, socket) {
-    msg.id = socket.chat_id
     msg.msg = msg.msg.substring(0,300)
-    msg.username = msg.username.substring(0,30)
-    msg.timestamp = (USE_CLIENT_TIMESTAMPS)?msg.timestamp:(new Date()).getTime()
+    
     if (msg.msg.trim().length<=0) {
         return false
     }
+
+    let lastMsgs = getHistory().slice(0,REPEATED_MESSAGES_LOOKBACK)
+    lastMsgs = lastMsgs.map((e)=>{return normaliseString(e)})
+    if (lastMsgs.includes(normaliseString(msg.msg))) {
+        return false
+    }
+
+    msg.id = socket.chat_id
+    msg.username = msg.username.substring(0,30)
+    msg.timestamp = (USE_CLIENT_TIMESTAMPS)?msg.timestamp:(new Date()).getTime()
+
+    
     return msg
 }
 
