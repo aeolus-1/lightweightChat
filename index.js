@@ -88,7 +88,7 @@ function verifyMsg(msg, socket) {
     }
 
     let lastMsgs = getHistory().slice(0,REPEATED_MESSAGES_LOOKBACK)
-    lastMsgs = lastMsgs.map((e)=>{return normaliseString(e)})
+    lastMsgs = lastMsgs.map((e)=>{return normaliseString(e.msg)})
     if (lastMsgs.includes(normaliseString(msg.msg))) {
         return false
     }
@@ -158,7 +158,7 @@ function commandHandler(msg, key) {
     if (msg.includes("/userlist")) {
         var text = "Current Users Online: \n"
         for (const [key, value] of Object.entries(usersOnline)) {
-            text += `${key} - ${value.username}\n`
+            text += `[${key}] ${value.username}\r\n \r\n`
         }
         var msg = {
             msg:text,
