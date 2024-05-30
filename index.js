@@ -1,4 +1,4 @@
-const process = require("process")
+const fetch = require("cross-fetch")
 const express = require('express');
 const app = express();
 const http = require('http');
@@ -25,10 +25,11 @@ const io = require("socket.io")(server, {
     }
 });
 
+var usersOnline = []
+
 app.use(express.static('public'))
 
 app.get('/', (req, res) => {
-    console.log("hey")
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
@@ -83,7 +84,8 @@ function verifyMsg(msg, socket) {
 
 io.on('connection', async(socket) => {
     socket.chat_id = Math.floor(Math.random()*10e8)
-   
+   usersOnline.push(socket.chat_id)
+   io.sockets.emit("updateUsersOnline", usersOnline.length)
     socket.emit("appendChat", JSON.stringify({
         msgs:getHistory()
     }))
@@ -99,6 +101,14 @@ io.on('connection', async(socket) => {
         }))
 
     });
+
+    socket.on("disconnect", () => {
+        const index = usersOnline.indexOf(socket.chat_id);
+        if (index > -1) {
+            usersOnline.splice(index, 1);
+        }
+        io.sockets.emit("updateUsersOnline", usersOnline.length)
+      });
 
 })
 
