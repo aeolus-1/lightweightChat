@@ -184,8 +184,8 @@ message {
                             img.src = a
                             console.log("inseting", a)
                             img.classList.add("chat_img")
-                            div.children[2].children[0].appendChild(document.createElement("br"))
-                            div.children[2].children[0].appendChild(img)
+                            div.appendChild(document.createElement("br"))
+                            div.appendChild(img)
                         }
                     })
                 }
