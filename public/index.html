@@ -105,7 +105,7 @@ message {
         var hasReceivedHistory = false
 
         document.getElementById("name_input").value = localStorage.getItem("username")||""
-        document.getElementById("name_input").onchange = ()=>{localStorage.setItem("username",document.getElementById("name_input").value)}
+        document.getElementById("name_input").onchange = ()=>{localStorage.setItem("username",document.getElementById("name_input").value);socket.emit("updateUsername", localStorage.getItem("username"))}
 
 
         //https://stackoverflow.com/questions/9714525/javascript-image-url-verify
@@ -208,7 +208,7 @@ message {
         }
 
         function submitToChat(msg) {
-            socket.emit("submitChat", JSON.stringify({msg:msg}))
+            socket.emit("submitChat", JSON.stringify({msg:msg,key:localStorage.getItem("key")}))
         }
 
 
@@ -237,6 +237,10 @@ message {
         const socket = io(SERVER_URL, {
             reconnection: true,
         })
+
+        socket.on("connect", () => {
+            socket.emit("updateUsername", localStorage.getItem("username"))
+        });
 
         socket.on("appendChat", (data)=>{
             data = JSON.parse(data)

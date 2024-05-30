@@ -3,7 +3,9 @@ const express = require('express');
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
+const { createHash } = require('crypto');
 
+var adminKey = "415f637bb8f7661bb08aa264dd85912ee539a1a639b294fda18bb5087fe914a0"
 /*
     message {
         msg: str
@@ -25,7 +27,7 @@ const io = require("socket.io")(server, {
     }
 });
 
-var usersOnline = []
+var usersOnline = {}
 
 app.use(express.static('public'))
 
@@ -87,13 +89,20 @@ function verifyMsg(msg, socket) {
 
 io.on('connection', async(socket) => {
     socket.chat_id = Math.floor(Math.random()*10e8)
-   usersOnline.push(socket.chat_id)
-   io.sockets.emit("updateUsersOnline", usersOnline.length)
+   usersOnline[socket.chat_id] = {
+    username: "?"
+   }
+   io.sockets.emit("updateUsersOnline", Object.keys(usersOnline).length)
     socket.emit("appendChat", JSON.stringify({
         msgs:getHistory(),
         isHistoryMsgs:true,
     }))
-    
+
+
+
+    socket.on('updateUsername', (data) => {
+        usersOnline[socket.chat_id].username = data
+    })
     socket.on('submitChat', (data) => {
         // mine's more professional
         data = JSON.parse(data)
@@ -104,6 +113,7 @@ io.on('connection', async(socket) => {
             io.sockets.emit("appendChat", JSON.stringify({
                 msgs:[data.msg],
             }))
+            commandHandler(data.msg.msg, data.key)
         }
 
         
@@ -111,11 +121,8 @@ io.on('connection', async(socket) => {
     });
 
     socket.on("disconnect", () => {
-        const index = usersOnline.indexOf(socket.chat_id);
-        if (index > -1) {
-            usersOnline.splice(index, 1);
-        }
-        io.sockets.emit("updateUsersOnline", usersOnline.length)
+       delete usersOnline[socket.chat_id]
+        io.sockets.emit("updateUsersOnline", Object.keys(usersOnline).length)
       });
 
 })
@@ -125,3 +132,26 @@ server.listen(8414, () => {
     console.log('listening on *:8414');
 })
 
+function commandHandler(msg, key) {
+    let admin = false
+    if (key) {
+       var hash =  createHash('sha256').update(key).digest('hex');
+       console.log(hash)
+       if (hash == adminKey) {admin = true}
+    }
+    if (msg.includes("/userlist")) {
+        var text = "Current Users Online: \n"
+        for (const [key, value] of Object.entries(usersOnline)) {
+            text += `${key} - ${value.username}\n`
+        }
+        var msg = {
+            msg:text,
+            username:"SERVER",
+            id: 0,
+            timestamp:(new Date()).getTime(),
+        } 
+        io.sockets.emit("appendChat", JSON.stringify({
+            msgs:[msg],
+        }))
+    }
+}
