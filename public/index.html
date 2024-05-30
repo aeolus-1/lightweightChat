@@ -59,6 +59,10 @@
         #msg {
             font-size: large;
         }
+        .chat_img {
+            max-width: 500px;
+            max-height: 200px;
+        }
 
     </style>
     <script src="/libs/socket.io.min.js"></script>
@@ -98,9 +102,49 @@ message {
 */
         const SERVER_URL = "https://chat.xl83.dev"
 
+        var hasReceivedHistory = false
+
         document.getElementById("name_input").value = localStorage.getItem("username")||""
         document.getElementById("name_input").onchange = ()=>{localStorage.setItem("username",document.getElementById("name_input").value)}
 
+
+        //https://stackoverflow.com/questions/9714525/javascript-image-url-verify
+        function testImage(url, callback, timeout) {
+            timeout = timeout || 5000;
+            var timedOut = false, timer;
+            var img = new Image();
+            img.onerror = img.onabort = function() {
+                if (!timedOut) {
+                    clearTimeout(timer);
+                    callback(url, "error");
+                }
+            };
+            img.onload = function() {
+                if (!timedOut) {
+                    clearTimeout(timer);
+                    callback(url, "success");
+                }
+            };
+            img.src = url;
+            timer = setTimeout(function() {
+                timedOut = true;
+                // reset .src to invalid URL so it stops previous
+                // loading, but doesn't trigger new load
+                img.src = "//!!!!/test.jpg";
+                callback(url, "timeout");
+            }, timeout); 
+        }
+
+        function findUrls(text) {
+            var urlRegex = /(https?:\/\/[^\s]+)/g,
+                urls = []
+            text.replace(urlRegex, function(url) {
+              urls.push(url)
+            })
+
+            console.log(urls)
+            return urls
+          }
 
         function appendToChat(msg) {
             var div = document.createElement('div'),
@@ -130,7 +174,25 @@ message {
             div.children[0].children[0].textContent = time
             div.children[1].children[0].children[0].textContent = msg.id
             div.children[1].children[2].children[0].textContent = msg.username
+
+
             div.children[2].children[0].textContent = msg.msg
+            let urls = findUrls(msg.msg)
+            if (urls!=undefined) {
+                for(let i=0;i<urls.length;i++) {
+                    console.log("testing img", urls[i])
+                    testImage(urls[i], (a,b)=>{
+                        if (b=="success") {
+                            let img = document.createElement("img")
+                            img.src = a
+                            console.log("inseting", a)
+                            img.classList.add("chat_img")
+                            div.appendChild(document.createElement("br"))
+                            div.appendChild(img)
+                        }
+                    })
+                }
+            }
             
         
             document.getElementById("chat_container").appendChild(div)
@@ -169,6 +231,10 @@ message {
 
         socket.on("appendChat", (data)=>{
             data = JSON.parse(data)
+
+            if (data.isHistoryMsgs) {
+                if (hasReceivedHistory) return 0
+            }
             
             for(let i=0;i<data.msgs.length;i++) {
                 appendToChat(data.msgs[i])

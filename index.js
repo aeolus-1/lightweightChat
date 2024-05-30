@@ -87,7 +87,8 @@ io.on('connection', async(socket) => {
    usersOnline.push(socket.chat_id)
    io.sockets.emit("updateUsersOnline", usersOnline.length)
     socket.emit("appendChat", JSON.stringify({
-        msgs:getHistory()
+        msgs:getHistory(),
+        isHistoryMsgs:true,
     }))
     
     socket.on('submitChat', (data) => {
