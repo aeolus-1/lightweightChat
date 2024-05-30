@@ -80,13 +80,13 @@ function normaliseString(string) {
     
 }
 
-function verifyMsg(msg, socket) {
+function verifyMsg(msg, socket, cmdKey) {
     msg.msg = msg.msg.substring(0,300)
     msg.id = socket.chat_id
     msg.username = msg.username.substring(0,30)
     msg.timestamp = (USE_CLIENT_TIMESTAMPS)?msg.timestamp:(new Date()).getTime()
 
-    if (Commands.runText(msg.msg, socket)) {
+    if (Commands.runText(msg.msg, socket, cmdKey)) {
         return false
     }
     
@@ -110,15 +110,15 @@ function verifyMsg(msg, socket) {
 
 class Commands {
     static cmds = {
-        "\\void_cmd":function(e, socket){
-            
+        "/void_cmd":function(e, socket){
+            // socket.emit("call", data) to emit to client that made command
         },
-        "\\command_with_input[":function(e, socket){
+        "/command_with_input[":function(e, socket){
             //e is the string after the [
         },
 
 
-        "\\userlist":function(e, socket){
+        "/userlist":function(e, socket){
             var text = "Current Users Online: \n"
             for (const [key, value] of Object.entries(usersOnline)) {
                 text += `[${key}] ${value.username}\r\n \r\n`
@@ -135,10 +135,18 @@ class Commands {
         },
         
     }
-    static runText(text, socket, execute=true) {
+    static runText(text, socket, cmdKey, execute=true) {
         var foundCmd = false,
             parameter = text.slice(text.search(/\[/)+1, text.length),
-            cmdStr  = text.slice(0, ((text.search(/\[/)+1)||text.length+1))
+            cmdStr  = text.slice(0, ((text.search(/\[/)+1)||text.length+1)),
+
+            isAdmin = false
+
+
+        if (cmdKey) {
+            var hash =  createHash('sha256').update(cmdKey).digest('hex');
+            if (hash == adminKey) {isAdmin = true}
+        }
 
         console.log(parameter, cmdStr)
         if (true) {
@@ -177,7 +185,7 @@ io.on('connection', async(socket) => {
     socket.on('submitChat', (data) => {
         // mine's more professional
         data = JSON.parse(data)
-        data.msg = verifyMsg(data.msg, socket)
+        data.msg = verifyMsg(data.msg, socket, data.key)
         if (data.msg) {
             appendHistory(data.msg)
 
@@ -203,26 +211,3 @@ server.listen(8414, () => {
     console.log('listening on *:8414');
 })
 
-function commandHandler(msg, key) {
-    let admin = false
-    if (key) {
-       var hash =  createHash('sha256').update(key).digest('hex');
-       console.log(hash)
-       if (hash == adminKey) {admin = true}
-    }
-    if (msg.includes("/userlist")) {
-        var text = "Current Users Online: \n"
-        for (const [key, value] of Object.entries(usersOnline)) {
-            text += `[${key}] ${value.username}\r\n \r\n`
-        }
-        var msg = {
-            msg:text,
-            username:"SERVER",
-            id: 0,
-            timestamp:(new Date()).getTime(),
-        } 
-        io.sockets.emit("appendChat", JSON.stringify({
-            msgs:[msg],
-        }))
-    }
-}
