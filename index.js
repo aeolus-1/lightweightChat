@@ -87,7 +87,8 @@ function verifyMsg(msg, socket) {
         return false
     }
 
-    let lastMsgs = getHistory().slice(0,REPEATED_MESSAGES_LOOKBACK)
+    let lastMsgs = getHistory()
+    lastMsgs = lastMsgs.slice(lastMsgs.length-REPEATED_MESSAGES_LOOKBACK, lastMsgs.length)
     lastMsgs = lastMsgs.map((e)=>{return normaliseString(e.msg)})
     console.log(lastMsgs, msg.msg)
     if (lastMsgs.includes(normaliseString(msg.msg))) {
