@@ -97,7 +97,7 @@ message {
     timestamp;
 }
 */
-        const SERVER_URL = "https://chat.xl83.dev"
+        const SERVER_URL = "https://warmsandybeaches.net"
 
         var hasReceivedHistory = false
 
@@ -135,12 +135,13 @@ message {
         function findUrls(text) {
             var urlRegex = /(https?:\/\/[^\s]+)/g,
                 urls = []
-            text.replace(urlRegex, function(url) {
+            let ntext = text.replace(urlRegex, function(url) {
               urls.push(url)
+              return ""
             })
 
             console.log(urls)
-            return urls
+            return {url:urls,text:ntext}
           }
 
         function appendToChat(msg) {
@@ -174,7 +175,10 @@ message {
 
 
             div.children[2].children[0].textContent = msg.msg
-            let urls = findUrls(msg.msg)
+            let furls = findUrls(msg.msg),
+                urls = furls.url
+                
+            div.children[2].children[0].textContent = furls.text
             if (urls!=undefined) {
                 for(let i=0;i<urls.length;i++) {
                     console.log("testing img", urls[i])
