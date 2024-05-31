@@ -233,7 +233,7 @@ class Commands {
         if (true) {
             Object.keys(Commands.cmds).forEach(cmd => {
                 var cmdOb = Commands.cmds[cmd]
-                //console.log(cmdStr, cmd, isAdmin)
+                console.log(cmdStr, cmd, isAdmin, cmdOb.isAdmin)
                 if (cmdStr == cmd && cmdOb.adminOnly?isAdmin:true) {
                     foundCmd = true
                     parameter = (parameter==undefined||parameter=="")?1:parameter
