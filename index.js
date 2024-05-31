@@ -114,20 +114,14 @@ function verifyMsg(msg, socket, cmdKey) {
 class Commands {
     static cmds = {
         "/void_cmd":{
-            callback:function(e, socket){
+            callback:function(cmdInputs, socket){
                 // socket.emit("call", data) to emit to client that made command
+                // cmdInputs is a array of strings of all the resulting parameters
             },
             adminOnly:false,
         },
-        "/command_with_input[":{
-            callback:function(e, socket){
-                //e is the string after the [
-            },
-            adminOnly:false,
-        },
-
         "/help":{
-            callback:function(e, socket){
+            callback:function(cmdInputs, socket){
                 let cmds = Object.keys(Commands.cmds),
                     cList = []
                 for (let i = 0; i < cmds.length; i++) {
@@ -137,6 +131,7 @@ class Commands {
                         username:"SERVER",
                         id: 0,
                         timestamp:(new Date()).getTime(),
+                        serverMsg:true,
                     })
                 }
                 
@@ -149,7 +144,8 @@ class Commands {
 
 
         "/userlist":{
-            callback:function(e, socket){
+            callback:function(cmdInputs, socket){
+                console.log(cmdInputs)
                 var text = "Current Users Online: \n"
                 for (const [key, value] of Object.entries(usersOnline)) {
                     text += `[${key}] ${value.username}\r\n \r\n`
@@ -159,6 +155,7 @@ class Commands {
                     username:"SERVER",
                     id: 0,
                     timestamp:(new Date()).getTime(),
+                    serverMsg:true,
                 } 
                 socket.emit("appendChat", JSON.stringify({
                     msgs:[msg],
@@ -167,12 +164,13 @@ class Commands {
             adminOnly:false,
         },
         "/ping":{
-            callback:function(e, socket){
+            callback:function(cmdInputs, socket){
                 var msg = {
                     msg:"pong",
                     username:"SERVER",
                     id: 0,
                     timestamp:(new Date()).getTime(),
+                    serverMsg:true,
                 } 
                 socket.emit("appendChat", JSON.stringify({
                     msgs:[msg],
@@ -190,6 +188,7 @@ class Commands {
                     username:"SERVER",
                     id: 0,
                     timestamp:(new Date()).getTime(),
+                    serverMsg:true,
                 } 
                 socket.emit("appendChat", JSON.stringify({
                     msgs:[msg],
@@ -198,7 +197,7 @@ class Commands {
             adminOnly:false,
         },
         "/clearHistory":{
-            callback:function(e, socket){
+            callback:function(cmdInputs, socket){
 
                 chatHistory = []
 
@@ -207,6 +206,27 @@ class Commands {
                     username:"SERVER",
                     id: 0,
                     timestamp:(new Date()).getTime(),
+                    serverMsg:true,
+                } 
+                io.sockets.emit("appendChat", JSON.stringify({
+                    msgs:[msg],
+                }))
+            },
+            adminOnly:true,
+        },
+        "/sendServerMsg":{
+            callback:function(cmdInputs, socket){
+
+                if (cmdInputs.length<1) {
+                    return 0
+                }
+
+                var msg = {
+                    msg:cmdInputs[0],
+                    username:"SERVER",
+                    id: 0,
+                    timestamp:(new Date()).getTime(),
+                    serverMsg:true,
                 } 
                 io.sockets.emit("appendChat", JSON.stringify({
                     msgs:[msg],
@@ -218,8 +238,9 @@ class Commands {
     }
     static runText(text, socket, cmdKey, execute=true) {
         var foundCmd = false,
-            parameter = text.slice(text.search(/\[/)+1, text.length),
-            cmdStr  = text.slice(0, ((text.search(/\[/)+1)||text.length+1)),
+            rawCmdParams = text.split(" "),
+            cmdParams = rawCmdParams.slice(1,rawCmdParams.length),
+            cmdStr  = rawCmdParams.slice(0,1),
 
             isAdmin = false
 
@@ -228,16 +249,12 @@ class Commands {
             var hash =  createHash('sha256').update(cmdKey).digest('hex');
             if (hash == adminKey) {isAdmin = true}
         }
-        console.log(isAdmin)
-        console.log(parameter, cmdStr)
         if (true) {
             Object.keys(Commands.cmds).forEach(cmd => {
                 var cmdOb = Commands.cmds[cmd]
-                console.log(cmdStr, cmd, isAdmin, cmdOb.isAdmin)
                 if (cmdStr == cmd && (cmdOb.adminOnly?isAdmin:true)) {
                     foundCmd = true
-                    parameter = (parameter==undefined||parameter=="")?1:parameter
-                    if (execute) cmdOb.callback(parameter, socket)
+                    if (execute) cmdOb.callback(cmdParams, socket)
                 }
             });
         }
@@ -245,6 +262,7 @@ class Commands {
         return foundCmd
     }
 }
+
 
 
 
