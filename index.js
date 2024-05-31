@@ -183,7 +183,7 @@ class Commands {
         "/time":{
             callback:function(e, socket){
 
-                let time = (new Date()).getTime().toLocaleTimeString()
+                let time = (new Date()).toLocaleTimeString()
 
                 var msg = {
                     msg:`Server time is ${time}`,
