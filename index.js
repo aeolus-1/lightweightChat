@@ -228,7 +228,7 @@ class Commands {
             var hash =  createHash('sha256').update(cmdKey).digest('hex');
             if (hash == adminKey) {isAdmin = true}
         }
-
+        console.log(isAdmin)
         console.log(parameter, cmdStr)
         if (true) {
             Object.keys(Commands.cmds).forEach(cmd => {
