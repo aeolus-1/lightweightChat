@@ -127,7 +127,7 @@ class Commands {
                 for (let i = 0; i < cmds.length; i++) {
                     const cmd = cmds[i];
                     cList.push({
-                        msg:cmd,
+                        msg:`- ${cmd}`,
                         username:"SERVER",
                         id: 0,
                         timestamp:(new Date()).getTime(),
@@ -135,9 +135,9 @@ class Commands {
                     })
                 }
                 
-                /*socket.emit("appendChat", JSON.stringify({
+                socket.emit("appendChat", JSON.stringify({
                     msgs:cList,
-                }))*/
+                }))
             },
             adminOnly:false,
         },
@@ -228,6 +228,7 @@ class Commands {
                     timestamp:(new Date()).getTime(),
                     serverMsg:true,
                 } 
+                appendHistory(msg)
                 io.sockets.emit("appendChat", JSON.stringify({
                     msgs:[msg],
                 }))
