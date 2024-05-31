@@ -234,7 +234,7 @@ class Commands {
             Object.keys(Commands.cmds).forEach(cmd => {
                 var cmdOb = Commands.cmds[cmd]
                 console.log(cmdStr, cmd, isAdmin, cmdOb.isAdmin)
-                if (cmdStr == cmd && cmdOb.adminOnly?isAdmin:true) {
+                if (cmdStr == cmd && (cmdOb.adminOnly?isAdmin:true)) {
                     foundCmd = true
                     parameter = (parameter==undefined||parameter=="")?1:parameter
                     if (execute) cmdOb.callback(parameter, socket)
