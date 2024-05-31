@@ -222,7 +222,7 @@ class Commands {
                 }
 
                 var msg = {
-                    msg:cmdInputs[0],
+                    msg:cmdInputs.join(" "),
                     username:"SERVER",
                     id: 0,
                     timestamp:(new Date()).getTime(),
