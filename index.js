@@ -65,6 +65,9 @@ function postMessageToDiscord(msg) {
         username: "Chat Logger",
         avatar_url: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.csr-online.net%2Fwp-content%2Fuploads%2F2020%2F06%2Fpeople-speech-bubbles-chatting-communication-concept-vector-illustration-141568372.jpg",
         content: msgString,
+        allowed_mentions: {
+            "parse": []
+        }
     }
     fetch("https://discord.com/api/webhooks/1245304028624326698/vbQGegNrDrj_Wrn0pCef01pFz3aDaw2njcjVVKI38KK1T2C8w2xNYdX2rsU_0aIzQJZN", {
         method: "POST",
