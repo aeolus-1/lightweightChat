@@ -110,39 +110,106 @@ function verifyMsg(msg, socket, cmdKey) {
 
 class Commands {
     static cmds = {
-        "/void_cmd":function(e, socket){
-            // socket.emit("call", data) to emit to client that made command
+        "/void_cmd":{
+            callback:function(e, socket){
+                // socket.emit("call", data) to emit to client that made command
+            },
+            adminOnly:false,
         },
-        "/command_with_input[":function(e, socket){
-            //e is the string after the [
+        "/command_with_input[":{
+            callback:function(e, socket){
+                //e is the string after the [
+            },
+            adminOnly:false,
+        },
+
+        "/help":{
+            callback:function(e, socket){
+                let cmds = Object.keys(Commands.cmds),
+                    cList = []
+                for (let i = 0; i < cmds.length; i++) {
+                    const cmd = cmds[i];
+                    cList.push({
+                        msg:cmd,
+                        username:"SERVER",
+                        id: 0,
+                        timestamp:(new Date()).getTime(),
+                    })
+                }
+                
+                socket.emit("appendChat", JSON.stringify({
+                    msgs:cList,
+                }))
+            },
+            adminOnly:false,
         },
 
 
-        "/userlist":function(e, socket){
-            var text = "Current Users Online: \n"
-            for (const [key, value] of Object.entries(usersOnline)) {
-                text += `[${key}] ${value.username}\r\n \r\n`
-            }
-            var msg = {
-                msg:text,
-                username:"SERVER",
-                id: 0,
-                timestamp:(new Date()).getTime(),
-            } 
-            socket.emit("appendChat", JSON.stringify({
-                msgs:[msg],
-            }))
+        "/userlist":{
+            callback:function(e, socket){
+                var text = "Current Users Online: \n"
+                for (const [key, value] of Object.entries(usersOnline)) {
+                    text += `[${key}] ${value.username}\r\n \r\n`
+                }
+                var msg = {
+                    msg:text,
+                    username:"SERVER",
+                    id: 0,
+                    timestamp:(new Date()).getTime(),
+                } 
+                socket.emit("appendChat", JSON.stringify({
+                    msgs:[msg],
+                }))
+            },
+            adminOnly:false,
         },
-        "/ping":function(e, socket){
-            var msg = {
-                msg:"pong",
-                username:"SERVER",
-                id: 0,
-                timestamp:(new Date()).getTime(),
-            } 
-            socket.emit("appendChat", JSON.stringify({
-                msgs:[msg],
-            }))
+        "/ping":{
+            callback:function(e, socket){
+                var msg = {
+                    msg:"pong",
+                    username:"SERVER",
+                    id: 0,
+                    timestamp:(new Date()).getTime(),
+                } 
+                socket.emit("appendChat", JSON.stringify({
+                    msgs:[msg],
+                }))
+            },
+            adminOnly:false,
+        },
+        "/time":{
+            callback:function(e, socket){
+
+                let time = (new Date()).getTime().toLocaleTimeString()
+
+                var msg = {
+                    msg:`Server time is ${time}`,
+                    username:"SERVER",
+                    id: 0,
+                    timestamp:(new Date()).getTime(),
+                } 
+                socket.emit("appendChat", JSON.stringify({
+                    msgs:[msg],
+                }))
+            },
+            adminOnly:false,
+        },
+        "/clearHistory":{
+            callback:function(e, socket){
+
+                chatHistory = []
+
+                var msg = {
+                    msg:`History cleared by admin`,
+                    username:"SERVER",
+                    id: 0,
+                    timestamp:(new Date()).getTime(),
+                } 
+                io.sockets.emit("appendChat", JSON.stringify({
+                    msgs:[msg],
+                }))
+            },
+            adminOnly:true,
         },
         
     }
@@ -163,10 +230,10 @@ class Commands {
         if (true) {
             Object.keys(Commands.cmds).forEach(cmd => {
                 var cmdOb = Commands.cmds[cmd]
-                if (cmdStr == cmd) {
+                if (cmdStr == cmd && isAdmin?cmdOb.adminOnly:true) {
                     foundCmd = true
                     parameter = (parameter==undefined||parameter=="")?1:parameter
-                    if (execute) cmdOb(parameter, socket)
+                    if (execute) cmdOb.callback(parameter, socket)
                 }
             });
         }
