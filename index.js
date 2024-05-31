@@ -140,9 +140,9 @@ class Commands {
                     })
                 }
                 
-                socket.emit("appendChat", JSON.stringify({
+                /*socket.emit("appendChat", JSON.stringify({
                     msgs:cList,
-                }))
+                }))*/
             },
             adminOnly:false,
         },
