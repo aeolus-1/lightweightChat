@@ -63,6 +63,9 @@
             max-width: 500px;
             max-height: 200px;
         }
+        .server_msg {
+            color: rgb(255, 0, 0);    
+        }
 
     </style>
     <script src="/libs/socket.io.min.js"></script>
@@ -175,6 +178,9 @@ message {
             div.children[0].children[0].textContent = time
             div.children[1].children[0].children[0].textContent = msg.id
             div.children[1].children[2].children[0].textContent = msg.username
+            if (msg.serverMsg) {
+                div.children[1].children[2].children[0].classList.add("server_msg")
+            }
 
             
             div.children[2].children[0].textContent = msg.msg
