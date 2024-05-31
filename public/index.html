@@ -176,10 +176,14 @@ message {
             div.children[1].children[0].children[0].textContent = msg.id
             div.children[1].children[2].children[0].textContent = msg.username
 
-
+            
             div.children[2].children[0].textContent = msg.msg
             let furls = findUrls(msg.msg),
                 urls = furls.url
+
+            
+
+            
                 
             div.children[2].children[0].textContent = furls.text
             if (urls!=undefined) {
@@ -200,6 +204,15 @@ message {
                     })
                 }
             }
+
+            let innerSpan = div.children[2].children[0]
+            console.log(innerSpan.innerHTML)
+            div.children[2].children[0].innerHTML = innerSpan.innerHTML.replace("@"+document.getElementsByClassName("name_input")[0].value, (e)=>{
+                return `<span style="background-color: yellow;">${e}</span>`
+            })
+            div.children[2].children[0].innerHTML = innerSpan.innerHTML.replace("@everyone", (e)=>{
+                return `<span style="background-color: yellow;">${e}</span>`
+            })
             
         
             document.getElementById("chat_container").appendChild(div)
