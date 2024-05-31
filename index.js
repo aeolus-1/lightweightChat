@@ -238,8 +238,6 @@ class Commands {
                     foundCmd = true
                     parameter = (parameter==undefined||parameter=="")?1:parameter
                     if (execute) cmdOb.callback(parameter, socket)
-                        
-                    
                 }
             });
         }
