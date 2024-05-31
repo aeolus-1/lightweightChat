@@ -127,7 +127,7 @@ class Commands {
                 for (let i = 0; i < cmds.length; i++) {
                     const cmd = cmds[i];
                     cList.push({
-                        msg:`- ${cmd}`,
+                        msg:`- ${cmd}  ${(Commands.cmds[cmd].adminOnly)?'[ADMIN COMMAND]':""}`,
                         username:"SERVER",
                         id: 0,
                         timestamp:(new Date()).getTime(),
