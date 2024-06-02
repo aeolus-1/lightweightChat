@@ -290,6 +290,10 @@ message {
             document.getElementById("usersOnline").textContent = `Users Online: ${count}`
         })
 
+        socket.on("forceReload", ()=>{
+            location.reload()
+        })
+
     </script>
 </body>
 </html>

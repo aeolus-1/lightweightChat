@@ -235,6 +235,15 @@ class Commands {
             },
             adminOnly:true,
         },
+        "/forceReload":{
+            callback:function(cmdInputs, socket){
+                io.sockets.emit("forceReload")
+                io.sockets.emit("appendChat", JSON.stringify({
+                    msgs:[msg],
+                }))
+            },
+            adminOnly:true,
+        },
         
     }
     static runText(text, socket, cmdKey, execute=true) {
