@@ -69,6 +69,7 @@
 
     </style>
     <script src="/libs/socket.io.min.js"></script>
+    <script src="../public/libs/socket.io.min.js"></script>
 </head>
 <body>
     <div class="full chat_display">
@@ -142,8 +143,14 @@ message {
             var urlRegex = /(https?:\/\/[^\s]+)/g,
                 urls = []
             let ntext = text.replace(urlRegex, function(url) {
-              urls.push(url)
-              return ""
+                let elementId = Math.floor(Math.random()*10e10)
+                urls.push({
+                    link:url,
+                    eleId:elementId,
+                })
+
+                
+                return `<span id="${elementId}">${url}</span>`
             })
 
             console.log(urls)
@@ -151,6 +158,10 @@ message {
           }
 
         function appendToChat(msg) {
+            let tmp = document.createElement("DIV");
+            tmp.innerHTML = msg.msg
+            msg.msg = tmp.textContent || tmp.innerText || ""
+
             var div = document.createElement('div'),
             htmlString = `<div class="chat_msg">
                 <div class="chat_msg_section">
@@ -191,11 +202,11 @@ message {
 
             
                 
-            div.children[2].children[0].textContent = furls.text
+            div.children[2].children[0].innerHTML = furls.text
             if (urls!=undefined) {
                 for(let i=0;i<urls.length;i++) {
                     console.log("testing img", urls[i])
-                    testImage(urls[i], (a,b)=>{
+                    testImage(urls[i].link, (a,b)=>{
                         if (b=="success") {
                             let img = document.createElement("img")
                             img.src = a
@@ -203,6 +214,7 @@ message {
                             img.classList.add("chat_img")
                             div.appendChild(document.createElement("br"))
                             div.appendChild(img)
+                            document.getElementById(urls[i].eleId).style.display = "none"
                             img.onload = ()=>{
                                 document.getElementById("chat_container").scrollTop += img.offsetHeight*1.2
                             }
