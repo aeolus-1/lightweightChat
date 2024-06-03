@@ -297,6 +297,7 @@ io.on('connection', async(socket) => {
 
 
     socket.on('updateUsername', (data) => {
+    try {
       data = JSON.parse(data)
         if (data.username !=null) usersOnline[socket.chat_id].username = data.username.substring(0,30)
         if (data.joined) {
@@ -311,6 +312,9 @@ io.on('connection', async(socket) => {
                 msgs:[msg],
             }))
         }
+    } catch (err) {
+        console.log("outdated client")
+    }
     })
     socket.on('submitChat', (data) => {
         // mine's more professional
@@ -332,6 +336,7 @@ io.on('connection', async(socket) => {
     socket.on("disconnect", () => {
        delete usersOnline[socket.chat_id]
         io.sockets.emit("updateUsersOnline", Object.keys(usersOnline).length)
+        try {
         var msg = {
                     msg:`${usersOnline[socket.chat_id].username} has disconnected`,
                     username:"SERVER",
@@ -342,6 +347,9 @@ io.on('connection', async(socket) => {
                 io.sockets.emit("appendChat", JSON.stringify({
                     msgs:[msg],
                 }))
+            } catch (err) {
+                console.log("outdated client")
+            }
       });
 
 })
