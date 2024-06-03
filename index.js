@@ -141,8 +141,6 @@ class Commands {
             },
             adminOnly:false,
         },
-
-
         "/userlist":{
             callback:function(cmdInputs, socket){
                 console.log(cmdInputs)
