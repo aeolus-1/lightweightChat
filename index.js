@@ -297,7 +297,7 @@ io.on('connection', async(socket) => {
 
 
     socket.on('updateUsername', (data) => {
-        data = JSON.parse(data)
+      /*  data = JSON.parse(data)
         if (data.username !=null) usersOnline[socket.chat_id].username = data.username.substring(0,30)
         if (data.joined) {
             var msg = {
@@ -311,6 +311,7 @@ io.on('connection', async(socket) => {
                 msgs:[msg],
             }))
         }
+        */
     })
     socket.on('submitChat', (data) => {
         // mine's more professional
