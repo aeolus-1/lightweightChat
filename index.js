@@ -86,7 +86,7 @@ function normaliseString(string) {
 function verifyMsg(msg, socket, cmdKey) {
     msg.msg = msg.msg.substring(0,300)
     msg.id = socket.chat_id
-    msg.username = msg.username.substring(0,30).replace(" ","")
+    msg.username = msg.username.substring(0,30).replaceAll(" ","")
     msg.timestamp = (USE_CLIENT_TIMESTAMPS)?msg.timestamp:(new Date()).getTime()
 
     if (Commands.runText(msg.msg, socket, cmdKey)) {
