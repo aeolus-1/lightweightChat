@@ -313,7 +313,7 @@ io.on('connection', async(socket) => {
             }))
         }
     } catch (err) {
-        onsole.log(err)
+        console.log(err)
         console.log("outdated client")
     }
     })
