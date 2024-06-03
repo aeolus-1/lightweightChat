@@ -314,7 +314,7 @@ io.on('connection', async(socket) => {
     socket.on('updateUsername', (data) => {
     try {
         if (data.username !=null) usersOnline[socket.chat_id].username = data.username.substring(0,30)
-        if (data.joined) {
+        if (data.joined&&false) {
             var msg = {
                 msg:`${usersOnline[socket.chat_id].username} has joined`,
                 username:"SERVER",
@@ -353,7 +353,8 @@ io.on('connection', async(socket) => {
     socket.on("disconnect", () => {
         io.sockets.emit("updateUsersOnline", Object.keys(usersOnline).length)
         try {
-        var msg = {
+            if (false) {
+            var msg = {
                     msg:`${usersOnline[socket.chat_id].username} has disconnected`,
                     username:"SERVER",
                     id: 0,
@@ -363,6 +364,7 @@ io.on('connection', async(socket) => {
                 io.sockets.emit("appendChat", JSON.stringify({
                     msgs:[msg],
                 }))
+            }
             delete usersOnline[socket.chat_id]
             } catch (err) {
                 console.log("dc event:")
