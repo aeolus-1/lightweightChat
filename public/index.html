@@ -12,6 +12,9 @@
         ::-webkit-scrollbar {
             display: none;
         }
+        ::placeholder {
+            opacity: 0.4; /* Firefox */
+          }
 
         .full {
             width:100%;
@@ -85,7 +88,7 @@
         </div>
         <div class="sub_section">
             message<br>
-            <input class="msg_input" id="msg_input" type="text">
+            <input class="msg_input" placeholder="type /help for list of commands" id="msg_input" type="text">
         </div>
         <div class="sub_section">
             <button id="submission">Submit</button>

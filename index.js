@@ -196,6 +196,21 @@ class Commands {
             },
             adminOnly:false,
         },
+        "/isTriangleGame2OutYet":{
+            callback:function(e, socket){
+                var msg = {
+                    msg:`no`,
+                    username:"SERVER",
+                    id: 0,
+                    timestamp:(new Date()).getTime(),
+                    serverMsg:true,
+                } 
+                socket.emit("appendChat", JSON.stringify({
+                    msgs:[msg],
+                }))
+            },
+            adminOnly:false,
+        },
         "/clearHistory":{
             callback:function(cmdInputs, socket){
 
