@@ -73,6 +73,9 @@
     </style>
     <script src="/libs/socket.io.min.js"></script>
     <script src="../public/libs/socket.io.min.js"></script>
+    <script src="../public/libs/badger.js"></script>
+
+    <link rel="icon" href="favicon.png">
 </head>
 <body>
     <div class="full chat_display">
@@ -113,6 +116,20 @@ message {
 
         document.getElementById("name_input").value = localStorage.getItem("username")||""
         document.getElementById("name_input").onchange = ()=>{localStorage.setItem("username",document.getElementById("name_input").value);socket.emit("updateUsername", {"username":localStorage.getItem("username"),"joined": false})}
+
+
+        var bdgr = new Badger({})
+        function ping() {
+            if (window.isFocused) return 0
+            console.log("pinged")
+            if (!(bdgr.value+1)) bdgr.value=0
+            bdgr.value++
+            console.log(bdgr.value)
+        }
+        function notify() {
+            if (window.isFocused) return 0
+            if (!(bdgr.value+1)) bdgr.value=0
+        }
 
 
         //https://stackoverflow.com/questions/9714525/javascript-image-url-verify
@@ -164,7 +181,7 @@ message {
             document.getElementById("chat_container").innerHTML = ""
         }
 
-        function appendToChat(msg) {
+        function appendToChat(msg, isHistoryMsgs=false) {
             let tmp = document.createElement("DIV");
             tmp.innerHTML = msg.msg
             msg.msg = tmp.textContent || tmp.innerText || ""
@@ -231,13 +248,15 @@ message {
             }
 
             let innerSpan = div.children[2].children[0]
-            console.log(innerSpan.innerHTML)
-            div.children[2].children[0].innerHTML = innerSpan.innerHTML.replace("@"+document.getElementsByClassName("name_input")[0].value, (e)=>{
+            div.children[2].children[0].innerHTML = innerSpan.innerHTML.replaceAll("@"+document.getElementsByClassName("name_input")[0].value, (e)=>{
+                if (!isHistoryMsgs) ping()
                 return `<span style="background-color: yellow;">${e}</span>`
             })
-            div.children[2].children[0].innerHTML = innerSpan.innerHTML.replace("@everyone", (e)=>{
+            div.children[2].children[0].innerHTML = innerSpan.innerHTML.replaceAll("@everyone", (e)=>{
+                if (!isHistoryMsgs) ping()
                 return `<span style="background-color: yellow;">${e}</span>`
             })
+            if (!isHistoryMsgs) notify()
             
         
             document.getElementById("chat_container").appendChild(div)
@@ -289,7 +308,7 @@ message {
             }
             
             for(let i=0;i<data.msgs.length;i++) {
-                appendToChat(data.msgs[i])
+                appendToChat(data.msgs[i], data.isHistoryMsgs)
             }
             
         })
@@ -309,6 +328,10 @@ message {
             }
             
         })
+
+        window.isFocused = true
+        window.onfocus=()=>{window.isFocused=true;bdgr.value=undefined}
+        window.onblur=()=>{window.isFocused=false}
 
     </script>
 </body>
