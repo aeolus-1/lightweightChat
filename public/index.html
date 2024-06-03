@@ -72,7 +72,7 @@
 
     </style>
     <script src="/libs/socket.io.min.js"></script>
-    <script src="../public/libs/socket.io.min.js"></script>
+    <script src=" /libs/socket.io.min.js"></script>
     <script src="/libs/badger.js"></script>
 
     <link rel="icon" href="favicon.png">
@@ -322,7 +322,7 @@ message {
         })
         socket.on("modifyUsername", (data)=>{
             data = JSON.parse(data)
-            if (document.getElementById("name_input").value == data.curName) {
+            if (document.getElementById("name_input").value.replaceAll(" ","") == data.curName) {
                 document.getElementById("name_input").value = data.newName
                 console.log(`username modified to ${data.newName}`)
             }
