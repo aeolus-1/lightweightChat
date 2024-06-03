@@ -298,6 +298,7 @@ io.on('connection', async(socket) => {
 
     socket.on('updateUsername', (data) => {
     try {
+    console.log(typeof data)
       data = JSON.parse(data)
         if (data.username !=null) usersOnline[socket.chat_id].username = data.username.substring(0,30)
         if (data.joined) {
@@ -313,6 +314,7 @@ io.on('connection', async(socket) => {
             }))
         }
     } catch (err) {
+        console.log("join event:")
         console.log(data)
         console.log(err)
         console.log("outdated client")
@@ -350,7 +352,7 @@ io.on('connection', async(socket) => {
                     msgs:[msg],
                 }))
             } catch (err) {
-                console.log(data)
+                console.log("dc event:")
                 console.log(err)
                 console.log("outdated client")
             }
