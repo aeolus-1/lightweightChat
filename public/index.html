@@ -293,6 +293,14 @@ message {
         socket.on("forceReload", ()=>{
             location.reload()
         })
+        socket.on("modifyUsername", (data)=>{
+            data = JSON.parse(data)
+            if (document.getElementById("name_input").value == data.curName) {
+                document.getElementById("name_input").value = data.newName
+                console.log(`username modified to ${data.newName}`)
+            }
+            
+        })
 
     </script>
 </body>

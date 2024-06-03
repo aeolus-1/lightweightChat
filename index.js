@@ -86,7 +86,7 @@ function normaliseString(string) {
 function verifyMsg(msg, socket, cmdKey) {
     msg.msg = msg.msg.substring(0,300)
     msg.id = socket.chat_id
-    msg.username = msg.username.substring(0,30)
+    msg.username = msg.username.substring(0,30).replace(" ","")
     msg.timestamp = (USE_CLIENT_TIMESTAMPS)?msg.timestamp:(new Date()).getTime()
 
     if (Commands.runText(msg.msg, socket, cmdKey)) {
@@ -240,6 +240,16 @@ class Commands {
                 io.sockets.emit("forceReload")
                 io.sockets.emit("appendChat", JSON.stringify({
                     msgs:[msg],
+                }))
+            },
+            adminOnly:true,
+        },
+        "/modifyUsername":{
+            callback:function(cmdInputs, socket){
+                console.log(`attempting to change username ${cmdInputs[0]} to ${cmdInputs[1]}`)
+                io.sockets.emit("modifyUsername", JSON.stringify({
+                    curName:cmdInputs[0],
+                    newName:cmdInputs[1],
                 }))
             },
             adminOnly:true,
