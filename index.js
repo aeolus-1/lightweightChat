@@ -313,6 +313,7 @@ io.on('connection', async(socket) => {
             }))
         }
     } catch (err) {
+        console.log(data)
         console.log(err)
         console.log("outdated client")
     }
@@ -349,6 +350,7 @@ io.on('connection', async(socket) => {
                     msgs:[msg],
                 }))
             } catch (err) {
+                console.log(data)
                 console.log(err)
                 console.log("outdated client")
             }
