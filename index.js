@@ -297,7 +297,20 @@ io.on('connection', async(socket) => {
 
 
     socket.on('updateUsername', (data) => {
-        if (data !=null) usersOnline[socket.chat_id].username = data.substring(0,30)
+        data = JSON.parse(data)
+        if (data.username !=null) usersOnline[socket.chat_id].username = data.username.substring(0,30)
+        if (data.joined) {
+            var msg = {
+                msg:`${usersOnline[socket.chat_id].username} has joined`,
+                username:"SERVER",
+                id: 0,
+                timestamp:(new Date()).getTime(),
+                serverMsg:true,
+            } 
+            io.sockets.emit("appendChat", JSON.stringify({
+                msgs:[msg],
+            }))
+        }
     })
     socket.on('submitChat', (data) => {
         // mine's more professional
@@ -319,6 +332,16 @@ io.on('connection', async(socket) => {
     socket.on("disconnect", () => {
        delete usersOnline[socket.chat_id]
         io.sockets.emit("updateUsersOnline", Object.keys(usersOnline).length)
+        var msg = {
+                    msg:`${usersOnline[socket.chat_id].username} has disconnected`,
+                    username:"SERVER",
+                    id: 0,
+                    timestamp:(new Date()).getTime(),
+                    serverMsg:true,
+                } 
+                io.sockets.emit("appendChat", JSON.stringify({
+                    msgs:[msg],
+                }))
       });
 
 })
