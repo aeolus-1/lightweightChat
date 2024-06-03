@@ -298,8 +298,6 @@ io.on('connection', async(socket) => {
 
     socket.on('updateUsername', (data) => {
     try {
-    console.log(typeof data)
-      data = JSON.parse(data)
         if (data.username !=null) usersOnline[socket.chat_id].username = data.username.substring(0,30)
         if (data.joined) {
             var msg = {
@@ -338,7 +336,6 @@ io.on('connection', async(socket) => {
     });
 
     socket.on("disconnect", () => {
-       delete usersOnline[socket.chat_id]
         io.sockets.emit("updateUsersOnline", Object.keys(usersOnline).length)
         try {
         var msg = {
@@ -351,11 +348,13 @@ io.on('connection', async(socket) => {
                 io.sockets.emit("appendChat", JSON.stringify({
                     msgs:[msg],
                 }))
+            delete usersOnline[socket.chat_id]
             } catch (err) {
                 console.log("dc event:")
                 console.log(err)
                 console.log("outdated client")
             }
+        
       });
 
 })
