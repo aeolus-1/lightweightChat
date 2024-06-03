@@ -157,6 +157,10 @@ message {
             return {url:urls,text:ntext}
           }
 
+        function clearChat() {
+            document.getElementById("chat_container").innerHTML = ""
+        }
+
         function appendToChat(msg) {
             let tmp = document.createElement("DIV");
             tmp.innerHTML = msg.msg
@@ -270,6 +274,7 @@ message {
         })
 
         socket.on("connect", () => {
+            clearChat()
             socket.emit("updateUsername", {"username":localStorage.getItem("username"),"joined": true})
         });
 
