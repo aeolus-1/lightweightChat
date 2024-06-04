@@ -392,7 +392,10 @@ io.on('connection', async(socket) => {
             socket.chat_id = hashedFp
         } else {
             socket.emit("urBanned", JSON.stringify(bans[fp]))
-            return socket.disconnect()
+            setTimeout(() => {
+                socket.disconnect()
+            }, 500); 
+            return 0
         }
    } else {
    return socket.disconnect()
