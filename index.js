@@ -260,6 +260,7 @@ class Commands {
                     timestamp:(new Date()).getTime(),
                     serverMsg:true,
                 } 
+                appendHistory(msg)
                 io.sockets.emit("appendChat", JSON.stringify({
                     msgs:[msg],
                 }))
