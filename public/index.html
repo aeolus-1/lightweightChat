@@ -331,6 +331,11 @@ message {
             }
             
         })
+        socket.on("forceModifyUsername", (data)=>{
+            data = JSON.parse(data)
+            document.getElementById("name_input").value = data.newName
+            
+        })
 
         window.isFocused = true
         window.onfocus=()=>{window.isFocused=true;bdgr.value=undefined}

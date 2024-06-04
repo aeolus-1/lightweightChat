@@ -138,6 +138,11 @@ function removeBan(id) {
         }
     }
 }
+function isNumeric(str) {
+    if (typeof str != "string") return false // we only process strings!  
+    return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+           !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+  }
 
 class Commands {
     static cmds = {
@@ -334,6 +339,14 @@ class Commands {
                     curName:cmdInputs[0],
                     newName:cmdInputs[1],
                 }))
+                for (let i = 0; i < io.sockets.length; i++) {
+                    const socket = io.sockets[i];
+                    if (socket.chat_id==int(cmdInputs[0])) {
+                        socket.emit("forceModifyUsername", JSON.stringify({
+                            newName:cmdInputs[1],
+                        }))
+                    }
+                }
             },
             adminOnly:true,
         },
