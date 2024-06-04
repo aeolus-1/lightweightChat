@@ -299,6 +299,9 @@ message {
             clearChat()
             socket.emit("updateUsername", {"username":localStorage.getItem("username"),"joined": true})
         });
+        socket.on("reconnect", () => {
+            clearChat()
+        });
 
         socket.on("appendChat", (data)=>{
             data = JSON.parse(data)
