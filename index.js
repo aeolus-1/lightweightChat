@@ -384,7 +384,6 @@ io.on('connection', async(socket) => {
 
 
     socket.on('updateUsername', (data) => {
-    try {
         if (data.username !=null) usersOnline[socket.chat_id].username = data.username.substring(0,30)
         if (data.joined&&false) {
             var msg = {
@@ -398,12 +397,6 @@ io.on('connection', async(socket) => {
                 msgs:[msg],
             }))
         }
-    } catch (err) {
-        console.log("join event:")
-        console.log(data)
-        console.log(err)
-        console.log("outdated client")
-    }
     })
     socket.on('submitChat', (data) => {
         // mine's more professional
@@ -424,7 +417,6 @@ io.on('connection', async(socket) => {
 
     socket.on("disconnect", () => {
         io.sockets.emit("updateUsersOnline", Object.keys(usersOnline).length)
-        try {
             if (false) {
             var msg = {
                     msg:`${usersOnline[socket.chat_id].username} has disconnected`,
@@ -438,12 +430,6 @@ io.on('connection', async(socket) => {
                 }))
             }
             delete usersOnline[socket.chat_id]
-            } catch (err) {
-                console.log("dc event:")
-                console.log(err)
-                console.log("outdated client")
-            }
-        
       });
 
 })
