@@ -123,7 +123,7 @@ function addBan(id, duration) {
     let user = usersOnline[id]
     if (!user) return
     if (user.socket!=undefined) {
-        user.socket.emit("urBanned",bans[id])
+        user.socket.emit("urBanned",JSON.stringify(bans[id]))
         socket.disconnect()
     }
 }
