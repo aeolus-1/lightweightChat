@@ -384,7 +384,7 @@ io.on('connection', async(socket) => {
    if (fp) {
     socket.chat_id = createHash('sha256').update(fp).digest('hex').substring(0, 9)
    } else {
-    socket.chat_id = Math.floor(Math.random()*10e8)
+    socket.disconnect()
    }
       usersOnline[socket.chat_id] = {
         username: "?"
