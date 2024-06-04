@@ -139,7 +139,7 @@ function updateBans() {
 }
 function removeBan(id) {
     for (let i = 0; i < Object.keys(bans).length; i++) {
-        const ban = bans(Object.keys(bans)[i])
+        const ban = bans[Object.keys(bans)[i]]
         if (ban.id==id) {
             delete bans[ban.id]
         }
