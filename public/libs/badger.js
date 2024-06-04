@@ -87,7 +87,6 @@ class Badger {
       sw: {x: 0, y: sd},
       se: {x: sd, y: sd},
     }[this.position];
-    console.log(this.offset)
   }
 
   // Public functions / methods:
