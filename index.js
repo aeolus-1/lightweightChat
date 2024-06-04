@@ -379,11 +379,6 @@ class Commands {
 
 
 io.on('connection', async(socket) => {
-    socket.chat_id = Math.floor(Math.random()*10e8)
-    usersOnline[socket.chat_id] = {
-        username: "?"
-    }
-   io.sockets.emit("updateUsersOnline", Object.keys(usersOnline).length)
     socket.emit("appendChat", JSON.stringify({
         msgs:getHistory(),
         isHistoryMsgs:true,
@@ -447,6 +442,7 @@ io.on('connection', async(socket) => {
         usersOnline[socket.chat_id] = {
             username: "?"
         }
+        io.sockets.emit("updateUsersOnline", Object.keys(usersOnline).length)
     })
 })
 
