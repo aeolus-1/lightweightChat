@@ -30,7 +30,7 @@ const io = require("socket.io")(server, {
 });
 
 var usersOnline = {}
-var bans = []
+var bans = {}
 
 app.use(express.static('public'))
 
@@ -114,27 +114,27 @@ function verifyMsg(msg, socket, cmdKey) {
 
 
 function addBan(id, duration) {
-    bans.push({
+    bans[id] = {
         id:id,
         duration:duration,
         timestamp:(new Date()).getTime(),
-    })
+    }
 }
 addBan(123456789, 300*1000)
 function updateBans() {
-    for (let i = 0; i < bans.length; i++) {
-        const ban = bans[i];
+    for (let i = 0; i < Object.keys(bans).length; i++) {
+        const ban = bans(Object.keys(bans)[i])
         let timeSince = (new Date()).getTime()-ban.timestamp
         if (timeSince>=ban.duration) {
-            bans.splice(i,1)
+            delete bans[ban.id]
         }
     }
 }
 function removeBan(id) {
-    for (let i = 0; i < bans.length; i++) {
-        const ban = bans[i];
+    for (let i = 0; i < Object.keys(bans).length; i++) {
+        const ban = bans(Object.keys(bans)[i])
         if (ban.id==id) {
-            bans.splice(i,1)
+            delete bans[ban.id]
         }
     }
 }
@@ -225,10 +225,10 @@ class Commands {
         "/getBans":{
             callback:function(e, socket){
 
-                let banList = bans,
+                let banList = Object.key(bans),
                     cList = []
                 for (let i = 0; i < banList.length; i++) {
-                    const ban = banList[i];
+                    const ban = bans[banList[i]]
                     cList.push({
                         msg:`-  ${ban.id}, ${Math.floor((ban.duration-((new Date()).getTime()-ban.timestamp))/1000)} seconds left`,
                         username:"SERVER",
@@ -382,7 +382,12 @@ io.on('connection', async(socket) => {
    var fp =  socket.handshake.query.fp
    console.log(fp)
    if (fp) {
-    socket.chat_id = createHash('sha256').update(fp).digest('hex').substring(0, 9)
+        if (bans[fp]!=undefined) {
+            socket.chat_id = createHash('sha256').update(fp).digest('hex').substring(0, 9)
+        } else {
+            socket.emit("urBanned")
+            return socket.disconnect()
+        }
    } else {
    return socket.disconnect()
    }
