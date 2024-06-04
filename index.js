@@ -138,11 +138,6 @@ function removeBan(id) {
         }
     }
 }
-function isNumeric(str) {
-    if (typeof str != "string") return false // we only process strings!  
-    return !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
-           !isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
-  }
 
 class Commands {
     static cmds = {
@@ -252,8 +247,8 @@ class Commands {
         "/ban":{
             callback:function(commandParameters, socket){
 
-                let idToBan = int(commandParameters[0]),
-                    banDuration = float(commandParameters[1])
+                let idToBan = parseInt(commandParameters[0]),
+                    banDuration = parseFloat(commandParameters[1])
 
                 addBan(idToBan, banDuration*1000)
 
