@@ -386,10 +386,10 @@ class Commands {
 
 io.on('connection', async(socket) => {
    var fp =  socket.handshake.query.fp
-   console.log(bans[fp])
    if (fp) {
-        if (bans[fp]==undefined) {
-            socket.chat_id = createHash('sha256').update(fp).digest('hex').substring(0, 9)
+    hashedFp = createHash('sha256').update(fp).digest('hex').substring(0, 9)
+        if (bans[hashedFp]==undefined) {
+            socket.chat_id = hashedFp
         } else {
             socket.emit("urBanned", JSON.stringify(bans[fp]))
             return socket.disconnect()
