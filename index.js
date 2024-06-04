@@ -224,7 +224,7 @@ class Commands {
         },
         "/getBans":{
             callback:function(e, socket){
-
+                console.log(bans)
                 let banList = Object.keys(bans),
                     cList = []
                 for (let i = 0; i < banList.length; i++) {
