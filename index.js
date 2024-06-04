@@ -124,7 +124,7 @@ function addBan(id, duration) {
     if (!user) return
     if (user.socket!=undefined) {
         user.socket.emit("urBanned",JSON.stringify(bans[id]))
-        socket.disconnect()
+        user.socket.disconnect()
     }
 }
 addBan(123456789, 300*1000)
