@@ -379,9 +379,6 @@ class Commands {
 
 io.on('connection', async(socket) => {
     socket.chat_id = Math.floor(Math.random()*10e8)
-   usersOnline[socket.chat_id] = {
-    username: "?"
-   }
    io.sockets.emit("updateUsersOnline", Object.keys(usersOnline).length)
     socket.emit("appendChat", JSON.stringify({
         msgs:getHistory(),
@@ -439,6 +436,15 @@ io.on('connection', async(socket) => {
             delete usersOnline[socket.chat_id]
       });
 
+
+      socket.on('giveFP', (data) => {
+        socket.fingerprint = data
+        socket.chat_id = createHash('sha256').update(data).digest('hex').substring(0, 9)
+
+        usersOnline[socket.chat_id] = {
+            username: "?"
+        }
+    })
 })
 
 setInterval(() => {
