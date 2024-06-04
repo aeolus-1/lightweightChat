@@ -382,7 +382,7 @@ io.on('connection', async(socket) => {
    var fp =  socket.handshake.query.fp
    console.log(fp)
    if (fp) {
-        if (bans[fp]!=undefined) {
+        if (bans[fp]==undefined) {
             socket.chat_id = createHash('sha256').update(fp).digest('hex').substring(0, 9)
         } else {
             socket.emit("urBanned")
