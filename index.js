@@ -119,6 +119,12 @@ function addBan(id, duration) {
         duration:duration,
         timestamp:(new Date()).getTime(),
     }
+
+    let user = usersOnline[id]
+    if (user.socket!=undefined) {
+        user.socket.emit("urBanned",bans[id])
+        socket.disconnect()
+    }
 }
 addBan(123456789, 300*1000)
 function updateBans() {
@@ -385,7 +391,7 @@ io.on('connection', async(socket) => {
         if (bans[fp]==undefined) {
             socket.chat_id = createHash('sha256').update(fp).digest('hex').substring(0, 9)
         } else {
-            socket.emit("urBanned")
+            socket.emit("urBanned", JSON.stringify(bans[fp]))
             return socket.disconnect()
         }
    } else {
@@ -403,7 +409,10 @@ io.on('connection', async(socket) => {
 
 
     socket.on('updateUsername', (data) => {
-        if (data.username !=null) usersOnline[socket.chat_id].username = data.username.substring(0,30)
+        if (data.username !=null) {
+            usersOnline[socket.chat_id].username = data.username.substring(0,30)
+            usersOnline[socket.chat_id].socket = socket
+        }
         if (data.joined&&false) {
             var msg = {
                 msg:`${usersOnline[socket.chat_id].username} has joined`,

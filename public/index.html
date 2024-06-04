@@ -334,6 +334,13 @@ message {
             document.getElementById("name_input").value = data.newName
             
         })
+        socket.on("urBanned", (data)=>{
+            data = JSON.parse(data)
+            console.log(data)
+            let time = (data.timestamp+data.duration)-(new Date()).getTime()
+            alert(`ur banned for ${time} seconds`)
+            
+        })
 } 
 connectWithFingerprint()
 
