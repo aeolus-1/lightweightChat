@@ -111,6 +111,35 @@ function verifyMsg(msg, socket, cmdKey) {
     return msg
 }
 
+var bans = {
+
+}
+function addBan(id, duration) {
+    bans.push({
+        id:id,
+        duration:duration,
+        timestamp:(new Date()).getTime(),
+    })
+}
+addBan(123456789, 300*1000)
+function updateBans() {
+    for (let i = 0; i < bans.length; i++) {
+        const ban = bans[i];
+        let timeSince = (new Date()).getTime()-ban.timestamp
+        if (timeSince>=ban.duration) {
+            bans.splice(i,1)
+        }
+    }
+}
+function removeBan(id) {
+    for (let i = 0; i < bans.length; i++) {
+        const ban = bans[i];
+        if (ban.id==id) {
+            bans.splice(i,1)
+        }
+    }
+}
+
 class Commands {
     static cmds = {
         "/void_cmd":{
@@ -194,10 +223,55 @@ class Commands {
             },
             adminOnly:false,
         },
-        "/isTriangleGame2OutYet":{
+        "/getBans":{
             callback:function(e, socket){
+
+                let banList = Object.keys(bans),
+                    cList = []
+                for (let i = 0; i < banList.length; i++) {
+                    const ban = banList[i];
+                    cList.push({
+                        msg:`-  ${ban.id}, ${Math.floor((ban.duration-((new Date()).getTime()-ban.timestamp))/1000)} seconds left`,
+                        username:"SERVER",
+                        id: 0,
+                        timestamp:(new Date()).getTime(),
+                        serverMsg:true,
+                    })
+                }
+                
+                socket.emit("appendChat", JSON.stringify({
+                    msgs:cList,
+                }))
+            },
+            adminOnly:false,
+        },
+        "/ban":{
+            callback:function(commandParameters, socket){
+
+                let idToBan = int(commandParameters[0]),
+                    banDuration = float(commandParameters[0])
+
+                addBan(idToBan, banDuration*1000)
+
+
                 var msg = {
-                    msg:`no`,
+                    msg:`User with id ${idToBan} has been banned for ${banDuration} seconds`,
+                    username:"SERVER",
+                    id: 0,
+                    timestamp:(new Date()).getTime(),
+                    serverMsg:true,
+                } 
+                io.sockets.emit("appendChat", JSON.stringify({
+                    msgs:[msg],
+                }))
+            },
+            adminOnly:true,
+        },
+        "/clearBan":{
+            callback:function(e, socket){
+                removeBan(int(e.id))
+                var msg = {
+                    msg:`Unbanned User with id ${e.id}`,
                     username:"SERVER",
                     id: 0,
                     timestamp:(new Date()).getTime(),
@@ -207,7 +281,7 @@ class Commands {
                     msgs:[msg],
                 }))
             },
-            adminOnly:false,
+            adminOnly:true,
         },
         "/clearHistory":{
             callback:function(cmdInputs, socket){
@@ -360,6 +434,9 @@ io.on('connection', async(socket) => {
 
 })
 
+setInterval(() => {
+    updateBans()
+}, 3000);
 
 server.listen(8414, () => {
     console.log('listening on *:8414');
