@@ -276,7 +276,7 @@ class Commands {
         },
         "/clearBan":{
             callback:function(e, socket){
-                removeBan(int(e.id))
+                removeBan(e.id)
                 var msg = {
                     msg:`Unbanned User with id ${e.id}`,
                     username:"SERVER",
@@ -344,7 +344,7 @@ class Commands {
                 }))
                 for (let i = 0; i < io.sockets.length; i++) {
                     const socket = io.sockets[i];
-                    if (socket.chat_id==int(cmdInputs[0])) {
+                    if (socket.chat_id==cmdInputs[0]) {
                         socket.emit("forceModifyUsername", JSON.stringify({
                             newName:cmdInputs[1],
                         }))
