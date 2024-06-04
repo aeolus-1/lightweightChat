@@ -285,15 +285,13 @@ message {
                 document.getElementById("submission").click()
             }
         })
-
-
-
-
-        
+        async function connectWithFingerprint() {
+        console.log("connecting...")
+        var fp = await ThumbmarkJS.getFingerprint();
         const socket = io(SERVER_URL, {
             reconnection: true,
-        })
-
+            query: `fp=${fp}`,
+        });
         socket.on("connect", async () => {
             clearChat()
             socket.emit("updateUsername", {"username":localStorage.getItem("username"),"joined": true})
@@ -337,6 +335,9 @@ message {
             document.getElementById("name_input").value = data.newName
             
         })
+} 
+connectWithFingerprint()
+
 
         window.isFocused = true
         window.onfocus=()=>{window.isFocused=true;bdgr.value=undefined}
