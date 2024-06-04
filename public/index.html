@@ -114,7 +114,7 @@ message {
         var hasReceivedHistory = false
 
         document.getElementById("name_input").value = localStorage.getItem("username")||""
-        document.getElementById("name_input").onchange = ()=>{localStorage.setItem("username",document.getElementById("name_input").value);socket.emit("updateUsername", {"username":localStorage.getItem("username"),"joined": false})}
+        document.getElementById("name_input").onchange = ()=>{localStorage.setItem("username",document.getElementById("name_input").value);window.socket.emit("updateUsername", {"username":localStorage.getItem("username"),"joined": false})}
 
 
         var bdgr = new Badger({})
@@ -264,7 +264,7 @@ message {
         }
 
         function submitToChat(msg) {
-            socket.emit("submitChat", JSON.stringify({msg:msg,key:localStorage.getItem("key")}))
+            window.socket.emit("submitChat", JSON.stringify({msg:msg,key:localStorage.getItem("key")}))
         }
 
 
@@ -292,11 +292,10 @@ message {
             reconnection: true,
             query: `fp=${fp}`,
         });
+        window.socket = socket
         socket.on("connect", async () => {
             clearChat()
             socket.emit("updateUsername", {"username":localStorage.getItem("username"),"joined": true})
-            var fp = await ThumbmarkJS.getFingerprint()
-            socket.emit("giveFP", fp)
         });
         socket.on("reconnect", () => {
             clearChat()
