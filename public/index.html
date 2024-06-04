@@ -72,7 +72,7 @@
 
     </style>
     <script src="/libs/socket.io.min.js"></script>
-    <script src="/libs/socket.io.min.js"></script>
+    <script src="/libs/thumbmark.umd.js"></script>
     <script src="/libs/badger.js"></script>
 
     <link rel="icon" href="favicon.png">
@@ -111,7 +111,6 @@ message {
 }
 */
         const SERVER_URL = "https://warmsandybeaches.net"
-            //hello????
         var hasReceivedHistory = false
 
         document.getElementById("name_input").value = localStorage.getItem("username")||""
@@ -295,9 +294,11 @@ message {
             reconnection: true,
         })
 
-        socket.on("connect", () => {
+        socket.on("connect", async () => {
             clearChat()
             socket.emit("updateUsername", {"username":localStorage.getItem("username"),"joined": true})
+            var fp = await ThumbmarkJS.getFingerprint()
+            socket.emit("giveFP", fp)
         });
         socket.on("reconnect", () => {
             clearChat()
