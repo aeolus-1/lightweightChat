@@ -247,7 +247,7 @@ class Commands {
         "/ban":{
             callback:function(commandParameters, socket){
 
-                let idToBan = parseInt(commandParameters[0]),
+                let idToBan = commandParameters[0],
                     banDuration = parseFloat(commandParameters[1])
 
                 addBan(idToBan, banDuration*1000)
