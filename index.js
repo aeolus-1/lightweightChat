@@ -467,7 +467,7 @@ io.on('connection', async(socket) => {
 
 setInterval(() => {
     updateBans()
-}, 3000);
+}, 1000);
 
 server.listen(8414, () => {
     console.log('listening on *:8414');
