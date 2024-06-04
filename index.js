@@ -30,6 +30,7 @@ const io = require("socket.io")(server, {
 });
 
 var usersOnline = {}
+var bans = []
 
 app.use(express.static('public'))
 
@@ -111,9 +112,7 @@ function verifyMsg(msg, socket, cmdKey) {
     return msg
 }
 
-var bans = {
 
-}
 function addBan(id, duration) {
     bans.push({
         id:id,
