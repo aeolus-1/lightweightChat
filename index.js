@@ -5,7 +5,7 @@ const http = require('http');
 const server = http.createServer(app);
 const { createHash } = require('crypto');
 /////////
-var adminKey = "415f637bb8f7661bb08aa264dd85912ee539a1a639b294fda18bb5087fe914a0"
+var adminKey = "209df7d5282798c4e9f84a6320dd933b2cfe6049b9f189eb9b2ac2bdecf52944"
 /*
     message {
         msg: str
@@ -225,7 +225,7 @@ class Commands {
         "/getBans":{
             callback:function(e, socket){
 
-                let banList = Object.key(bans),
+                let banList = Object.keys(bans),
                     cList = []
                 for (let i = 0; i < banList.length; i++) {
                     const ban = bans[banList[i]]
