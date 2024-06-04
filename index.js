@@ -123,7 +123,7 @@ function addBan(id, duration) {
 addBan(123456789, 300*1000)
 function updateBans() {
     for (let i = 0; i < Object.keys(bans).length; i++) {
-        const ban = bans(Object.keys(bans)[i])
+        const ban = bans[Object.keys(bans)[i]]
         let timeSince = (new Date()).getTime()-ban.timestamp
         if (timeSince>=ban.duration) {
             delete bans[ban.id]
