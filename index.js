@@ -477,6 +477,16 @@ setInterval(() => {
     updateBans()
 }, 1000);
 
+var tmsg = {
+    msg:`Server restarted`,
+    username:"SERVER",
+    id: 0,
+    timestamp:(new Date()).getTime(),
+    serverMsg:true,
+} 
+appendHistory(tmsg)
+
+
 server.listen(8414, () => {
     console.log('listening on *:8414');
 })
