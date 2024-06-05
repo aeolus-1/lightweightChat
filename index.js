@@ -472,7 +472,7 @@ io.on('connection', async(socket) => {
             delete usersOnline[socket.chat_id]
       });
 })
-
+//harry was here
 setInterval(() => {
     updateBans()
 }, 1000);
