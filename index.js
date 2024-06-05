@@ -259,9 +259,17 @@ class Commands {
 
                 addBan(idToBan, banDuration*1000)
 
+                username = usersOnline[idToBan]
+                if (username!=undefined) {
+                    username = ` and username of ${username.username}`
+                } else {
+                    username = ''
+                }
+
+
 
                 var msg = {
-                    msg:`User with id ${idToBan} has been banned for ${banDuration} seconds`,
+                    msg:`User with id ${idToBan}${username} has been banned for ${banDuration} seconds`,
                     username:"SERVER",
                     id: 0,
                     timestamp:(new Date()).getTime(),
