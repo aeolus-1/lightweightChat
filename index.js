@@ -284,9 +284,9 @@ class Commands {
         },
         "/clearBan":{
             callback:function(e, socket){
-                removeBan(e.id)
+                removeBan(e[0])
                 var msg = {
-                    msg:`Unbanned User with id ${e.id}`,
+                    msg:`Unbanned User with id ${e[0]}`,
                     username:"SERVER",
                     id: 0,
                     timestamp:(new Date()).getTime(),
