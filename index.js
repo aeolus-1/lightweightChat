@@ -259,7 +259,7 @@ class Commands {
 
                 addBan(idToBan, banDuration*1000)
 
-                username = usersOnline[idToBan]
+                var username = usersOnline[idToBan]
                 if (username!=undefined) {
                     username = ` and username of ${username.username}`
                 } else {
@@ -422,7 +422,12 @@ io.on('connection', async(socket) => {
 
     socket.on('updateUsername', (data) => {
         if (data.username !=null) {
+            try {
             usersOnline[socket.chat_id].username = data.username.substring(0,30)
+            } catch (err) {
+            console.log("why is this happening")
+            console.log(data)
+            }
             usersOnline[socket.chat_id].socket = socket
         }
         if (data.joined&&false) {
