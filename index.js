@@ -422,7 +422,12 @@ io.on('connection', async(socket) => {
 
     socket.on('updateUsername', (data) => {
         if (data.username !=null) {
+            try {
             usersOnline[socket.chat_id].username = data.username.substring(0,30)
+            } catch (err) {
+            console.log("why is this happening")
+            console.log(data)
+            }
             usersOnline[socket.chat_id].socket = socket
         }
         if (data.joined&&false) {
