@@ -259,7 +259,7 @@ class Commands {
 
                 addBan(idToBan, banDuration*1000)
 
-                username = usersOnline[idToBan]
+                var username = usersOnline[idToBan]
                 if (username!=undefined) {
                     username = ` and username of ${username.username}`
                 } else {
