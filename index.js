@@ -229,7 +229,7 @@ class Commands {
     },
     "/time": {
       callback: function (e, socket) {
-        let time = new Date().toLocaleTimeString();
+        let time = new Date().toLocaleTimeString("en-AU");
 
         var msg = {
           msg: `Server time is ${time}`,
