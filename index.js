@@ -52,9 +52,9 @@ function appendHistory(msg) {
 }
 
 function parseMsgString(msg) {
-  return `[${new Date(msg.timestamp).toLocaleDateString()} ${new Date(
+  return `[${new Date(msg.timestamp).toLocaleDateString("en-AU")} ${new Date(
     msg.timestamp
-  ).toLocaleTimeString()}] [?] [${msg.username} (${msg.id})] ${msg.msg}`;
+  ).toLocaleTimeString("en-AU")}] [?] [${msg.username} (${msg.id})] ${msg.msg}`;
 }
 
 function postMessageToDiscord(msg) {
