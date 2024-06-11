@@ -60,6 +60,7 @@ function parseMsgString(msg) {
 
 function containsSlurs(msg) {
   if (!msg) return
+  msg = msg.toLowerCase()
   msg = msg.replace(/ /g,'')
   msg = msg.replace(/[^a-zA-Z ]/g, "")
   msg = msg.replace("1","i")
