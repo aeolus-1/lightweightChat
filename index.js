@@ -67,6 +67,7 @@ function containsSlurs(msg) {
   msg = msg.replace("3","e")
   msg = msg.replace("0","o")
   msg = msg.replace("l","i")
+  msg = msg.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
   console.log(`Message: ${msg}`)
   if (list.slurs.some(v => msg.includes(v))) {
     return true
