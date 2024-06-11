@@ -59,12 +59,10 @@ function parseMsgString(msg) {
 }
 
 function containsSlurs(msg) {
-  console.log(msg)
-  list.slurs.some(v => {
-    if (msg.includes(v)) {
-      return v
-    }
-  })
+  console.log(`Message: ${msg}`)
+  if (list.slurs.some(v => msg.includes(v))) {
+    return true
+}
 }
 
 function postMessageToDiscord(msg) {
@@ -496,9 +494,8 @@ io.on("connection", async (socket) => {
     data = JSON.parse(data);
     data.msg = verifyMsg(data.msg, socket, data.key);
     console.log(data)
-    var slurCheck = containsSlurs(data.msg.msg)
-    if (slurCheck) {
-      console.log(`${data.msg.username}(${data.msg.id}) tried to say ${slurCheck}`)
+    if (containsSlurs(data.msg.msg)) {
+      console.log(`${data.msg.username}(${data.msg.id}) tried to say a slur`)
       return socket.emit("noSlurs")
     }
 
