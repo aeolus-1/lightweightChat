@@ -59,6 +59,7 @@ function parseMsgString(msg) {
 }
 
 function containsSlurs(msg) {
+  if (!msg) return
   msg = msg.replace(/ /g,'')
   msg = msg.replace(/[^a-zA-Z ]/g, "")
   console.log(`Message: ${msg}`)
