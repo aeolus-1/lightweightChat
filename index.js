@@ -62,6 +62,7 @@ function containsSlurs(msg) {
   if (!msg) return
   msg = msg.replace(/ /g,'')
   msg = msg.replace(/[^a-zA-Z ]/g, "")
+  msg = msg.replace("1","i")
   console.log(`Message: ${msg}`)
   if (list.slurs.some(v => msg.includes(v))) {
     return true
