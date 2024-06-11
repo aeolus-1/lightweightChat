@@ -495,6 +495,7 @@ io.on("connection", async (socket) => {
     // mine's more professional
     data = JSON.parse(data);
     data.msg = verifyMsg(data.msg, socket, data.key);
+    console.log(data)
     var slurCheck = containsSlurs(data.msg.msg)
     if (slurCheck) {
       console.log(`${data.msg.username}(${data.msg.id}) tried to say ${slurCheck}`)
