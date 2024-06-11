@@ -59,6 +59,7 @@ function parseMsgString(msg) {
 }
 
 function containsSlurs(msg) {
+  console.log(msg)
   list.slurs.some(v => {
     if (msg.includes(v)) {
       return v
