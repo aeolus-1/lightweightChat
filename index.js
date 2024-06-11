@@ -59,9 +59,11 @@ function parseMsgString(msg) {
 }
 
 function containsSlurs(msg) {
-  if (list.slurs.some(v => msg.includes(v))) {
-    return v
-}
+  list.slurs.some(v => {
+    if (msg.includes(v)) {
+      return v
+    }
+  })
 }
 
 function postMessageToDiscord(msg) {
