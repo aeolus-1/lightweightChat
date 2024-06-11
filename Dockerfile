@@ -1,9 +1,5 @@
 FROM node:16-alpine
-RUN apt-get update
-RUN apt-get install -y locales locales-all
-ENV LC_ALL en_AU.UTF-8
-ENV LANG en_AU.UTF-8
-ENV LANGUAGE en_AU.UTF-8
+
 # Create app directory
 WORKDIR /usr/src/app
 

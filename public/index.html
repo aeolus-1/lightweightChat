@@ -346,6 +346,11 @@ message {
             alert(`ur banned for ${Math.floor(time / 1000)} seconds`)
             
         })
+
+        socket.on("noSlurs", ()=>{
+            alert(`No Slurs >:(`)
+            
+        })
 } 
 connectWithFingerprint()
 
