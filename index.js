@@ -4,6 +4,7 @@ const app = express();
 const http = require("http");
 const server = http.createServer(app);
 const { createHash } = require("crypto");
+const list = require("./badWords")
 /////////
 var adminKey =
   "209df7d5282798c4e9f84a6320dd933b2cfe6049b9f189eb9b2ac2bdecf52944";
@@ -55,6 +56,12 @@ function parseMsgString(msg) {
   return `[${new Date(msg.timestamp).toLocaleDateString("en-AU")} ${new Date(
     msg.timestamp
   ).toLocaleTimeString("en-AU")}] [?] [${msg.username} (${msg.id})] ${msg.msg}`;
+}
+
+function containsSlurs(msg) {
+  if (list.slurs.some(v => msg.includes(v))) {
+    return v
+}
 }
 
 function postMessageToDiscord(msg) {
@@ -485,6 +492,12 @@ io.on("connection", async (socket) => {
     // mine's more professional
     data = JSON.parse(data);
     data.msg = verifyMsg(data.msg, socket, data.key);
+    var slurCheck = containsSlurs(data.msg.msg)
+    if (slurCheck) {
+      console.log(`${data.msg.username}(${data.msg.id}) tried to say ${slurCheck}`)
+      return socket.emit("noSlurs")
+    }
+
     if (data.msg) {
       appendHistory(data.msg);
 
