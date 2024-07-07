@@ -3,7 +3,12 @@ a very very small anonymous node.js and socket.io chat web application lacking a
 made by @nekoify and @reef  
 
 ## Running  
-idk  
+```
+git clone https://github.com/aeolus-1/lightweightChat
+cd lightweightChat
+npm i
+node .
+```
   
 ## Features  
  - ThumbmarkJS to fingerprint users and a minimal admin system for moderation
