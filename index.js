@@ -4,10 +4,12 @@ const app = express();
 const http = require("http");
 const server = http.createServer(app);
 const { createHash } = require("crypto");
-const list = require("./badWords")
+const list = require("./word_blacklist")
 /////////
 var adminKey =
   "209df7d5282798c4e9f84a6320dd933b2cfe6049b9f189eb9b2ac2bdecf52944";
+
+
 /*
     message {
         msg: str
@@ -17,9 +19,17 @@ var adminKey =
     }
 */
 
+
+const discordConnection = {
+  "websocket":"",
+  "avatar":"",
+  "username":""
+}
+
 const HISTORY_LENGTH = 40,
   USE_CLIENT_TIMESTAMPS = false,
-  LOG_TO_DISCORD = true,
+  LOG_TO_DISCORD = false,
+  SHOW_JOIN_MESSAGES = false,
   REPEATED_MESSAGES_LOOKBACK = 3; // number of messages looked back to see if the message is a repeat
 
 const io = require("socket.io")(server, {
@@ -77,16 +87,16 @@ function containsSlurs(msg) {
 function postMessageToDiscord(msg) {
   let msgString = parseMsgString(msg);
   var params = {
-    username: "Chat Logger",
+    username: discordConnection.username,
     avatar_url:
-      "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.csr-online.net%2Fwp-content%2Fuploads%2F2020%2F06%2Fpeople-speech-bubbles-chatting-communication-concept-vector-illustration-141568372.jpg",
+      discordConnection.avatar,
     content: msgString,
     allowed_mentions: {
       parse: [],
     },
   };
   fetch(
-    "https://discord.com/api/webhooks/1245304028624326698/vbQGegNrDrj_Wrn0pCef01pFz3aDaw2njcjVVKI38KK1T2C8w2xNYdX2rsU_0aIzQJZN",
+    discordConnection.websocket,
     {
       method: "POST",
       headers: {
@@ -149,7 +159,6 @@ function addBan(id, duration) {
     user.socket.disconnect();
   }
 }
-addBan(123456789, 300 * 1000);
 function updateBans() {
   for (let i = 0; i < Object.keys(bans).length; i++) {
     const ban = bans[Object.keys(bans)[i]];
@@ -381,7 +390,7 @@ class Commands {
             msgs: [msg],
           })
         );
-      },
+      }, 
       adminOnly: true,
     },
     "/forceReload": {
@@ -482,7 +491,7 @@ io.on("connection", async (socket) => {
         console.log(data);
       }
     }
-    if (data.joined && false) {
+    if (data.joined && SHOW_JOIN_MESSAGES) {
       var msg = {
         msg: `${usersOnline[socket.chat_id].username} has joined`,
         username: "SERVER",
@@ -546,14 +555,13 @@ setInterval(() => {
   updateBans();
 }, 1000);
 
-var tmsg = {
+appendHistory({
   msg: `Server restarted`,
   username: "SERVER",
   id: 0,
   timestamp: new Date().getTime(),
   serverMsg: true,
-};
-appendHistory(tmsg);
+});
 
 server.listen(8414, () => {
   console.log("listening on *:8414");

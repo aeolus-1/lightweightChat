@@ -1,26 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sandy and Warm Beaches</title>
+    <title>Lightweight Chat Application</title>
     <style>
         body {
             overflow: hidden;
             line-height: 95%;
             margin-top: 0%;
         }
+
         ::-webkit-scrollbar {
             display: none;
         }
+
         ::placeholder {
-            opacity: 0.4; /* Firefox */
-          }
+            opacity: 0.4;
+            /* Firefox */
+        }
 
         .full {
-            width:100%;
+            width: 100%;
             height: calc(100vh - 75px);
         }
+
         .sub_section {
             display: inline-block;
         }
@@ -28,10 +33,12 @@
         .msg_input {
             width: 50vw;
         }
+
         .chat_id {
             font-size: 6px;
             margin-bottom: -10px;
         }
+
         .chat_msg_section {
             margin-right: 15px;
             display: inline-block;
@@ -46,15 +53,19 @@
             position: absolute;
             width: 100%;
         }
+
         .chat_display {
             position: relative;
         }
+
         .chat_msg {
             margin-top: 1px;
         }
+
         .name_display {
             line-height: 70%;
         }
+
         .chat_submission {
             background-color: white;
             height: 50px;
@@ -63,14 +74,15 @@
         #msg {
             font-size: large;
         }
+
         .chat_img {
             max-width: 500px;
             max-height: 200px;
         }
-        .server_msg {
-            color: rgb(255, 0, 0);    
-        }
 
+        .server_msg {
+            color: rgb(255, 0, 0);
+        }
     </style>
     <script src="/libs/socket.io.min.js"></script>
     <script src="/libs/thumbmark.umd.js"></script>
@@ -78,14 +90,15 @@
 
     <link rel="icon" href="favicon.png">
 </head>
+
 <body>
     <div class="full chat_display">
         <div class="chat_container" id="chat_container">
-            
+
         </div>
     </div>
     <hr>
-    
+
     <div class="chat_submission">
         <div class="sub_section">
             username<br>
@@ -98,41 +111,38 @@
         <div class="sub_section">
             <button id="submission">Submit</button>
         </div>
-        <div class="sub_section" style="float: right; margin-left: 10px;">
-            <div align='center'><a href='https://www.free-website-hit-counter.com'><img src='https://www.free-website-hit-counter.com/c.php?d=9&id=172022&s=5' border='0' alt='Free Website Hit Counter'></a><br / ><small><a href='https://www.free-website-hit-counter.com' title="Free Website Hit Counter">Free website hit counter</a></small></div>
-        </div>
         <div class="sub_section" style="float: right;">
             <p id="usersOnline">Users Online: ?</p>
-            </div>
+        </div>
     </div>
 
     <script>
-/*
-message {
-    msg;
-    username;
-    id;
-    timestamp;
-}
-*/
-        const SERVER_URL = "https://warmsandybeaches.net"
+        /*
+        message {
+            msg;
+            username;
+            id;
+            timestamp;
+        }
+        */
+        const SERVER_URL = "https://example.net"
         var hasReceivedHistory = false
 
-        document.getElementById("name_input").value = localStorage.getItem("username")||""
-        document.getElementById("name_input").onchange = ()=>{localStorage.setItem("username",document.getElementById("name_input").value);window.socket.emit("updateUsername", {"username":localStorage.getItem("username"),"joined": false})}
+        document.getElementById("name_input").value = localStorage.getItem("username") || ""
+        document.getElementById("name_input").onchange = () => { localStorage.setItem("username", document.getElementById("name_input").value); window.socket.emit("updateUsername", { "username": localStorage.getItem("username"), "joined": false }) }
 
 
         var bdgr = new Badger({})
         function ping() {
             if (window.isFocused) return 0
             console.log("pinged")
-            if (!(bdgr.value+1)) bdgr.value=0
+            if (!(bdgr.value + 1)) bdgr.value = 0
             bdgr.value++
             console.log(bdgr.value)
         }
         function notify() {
             if (window.isFocused) return 0
-            if (!(bdgr.value+1)) bdgr.value=0
+            if (!(bdgr.value + 1)) bdgr.value = 0
         }
 
 
@@ -141,57 +151,57 @@ message {
             timeout = timeout || 5000;
             var timedOut = false, timer;
             var img = new Image();
-            img.onerror = img.onabort = function() {
+            img.onerror = img.onabort = function () {
                 if (!timedOut) {
                     clearTimeout(timer);
                     callback(url, "error");
                 }
             };
-            img.onload = function() {
+            img.onload = function () {
                 if (!timedOut) {
                     clearTimeout(timer);
                     callback(url, "success");
                 }
             };
             img.src = url;
-            timer = setTimeout(function() {
+            timer = setTimeout(function () {
                 timedOut = true;
                 // reset .src to invalid URL so it stops previous
                 // loading, but doesn't trigger new load
                 img.src = "//!!!!/test.jpg";
                 callback(url, "timeout");
-            }, timeout); 
+            }, timeout);
         }
 
         function findUrls(text) {
             var urlRegex = /(https?:\/\/[^\s]+)/g,
                 urls = []
-            let ntext = text.replace(urlRegex, function(url) {
-                let elementId = Math.floor(Math.random()*10e10)
+            let ntext = text.replace(urlRegex, function (url) {
+                let elementId = Math.floor(Math.random() * 10e10)
                 urls.push({
-                    link:url,
-                    eleId:elementId,
+                    link: url,
+                    eleId: elementId,
                 })
 
-                
+
                 return `<span id="${elementId}">${url}</span>`
             })
 
             console.log(urls)
-            return {url:urls,text:ntext}
-          }
+            return { url: urls, text: ntext }
+        }
 
         function clearChat() {
             document.getElementById("chat_container").innerHTML = ""
         }
 
-        function appendToChat(msg, isHistoryMsgs=false) {
+        function appendToChat(msg, isHistoryMsgs = false) {
             let tmp = document.createElement("DIV");
             tmp.innerHTML = msg.msg
             msg.msg = tmp.textContent || tmp.innerText || ""
 
             var div = document.createElement('div'),
-            htmlString = `<div class="chat_msg">
+                htmlString = `<div class="chat_msg">
                 <div class="chat_msg_section">
                     <span id="time">14:30</span>
                 </div>
@@ -200,7 +210,7 @@ message {
                         <span id="id">15673478</span>
                     </span><br>
                     <b class="chat_username">
-                        <span id="username">reef</span>
+                        <span id="username">unnamed</span>
                     </b>
                 </div>
                 <div class="chat_msg_section">
@@ -221,21 +231,21 @@ message {
                 div.children[1].children[2].children[0].classList.add("server_msg")
             }
 
-            
+
             div.children[2].children[0].textContent = msg.msg
             let furls = findUrls(msg.msg),
                 urls = furls.url
 
-            
 
-            
-                
+
+
+
             div.children[2].children[0].innerHTML = furls.text
-            if (urls!=undefined) {
-                for(let i=0;i<urls.length;i++) {
+            if (urls != undefined) {
+                for (let i = 0; i < urls.length; i++) {
                     console.log("testing img", urls[i])
-                    testImage(urls[i].link, (a,b)=>{
-                        if (b=="success") {
+                    testImage(urls[i].link, (a, b) => {
+                        if (b == "success") {
                             let img = document.createElement("img")
                             img.src = a
                             console.log("inseting", a)
@@ -243,8 +253,8 @@ message {
                             div.appendChild(document.createElement("br"))
                             div.appendChild(img)
                             document.getElementById(urls[i].eleId).style.display = "none"
-                            img.onload = ()=>{
-                                document.getElementById("chat_container").scrollTop += img.offsetHeight*1.2
+                            img.onload = () => {
+                                document.getElementById("chat_container").scrollTop += img.offsetHeight * 1.2
                             }
                         }
                     })
@@ -252,113 +262,115 @@ message {
             }
 
             let innerSpan = div.children[2].children[0]
-            div.children[2].children[0].innerHTML = innerSpan.innerHTML.replaceAll("@"+document.getElementsByClassName("name_input")[0].value, (e)=>{
+            div.children[2].children[0].innerHTML = innerSpan.innerHTML.replaceAll("@" + document.getElementsByClassName("name_input")[0].value, (e) => {
                 if (!isHistoryMsgs) ping()
                 return `<span style="background-color: yellow;">${e}</span>`
             })
-            div.children[2].children[0].innerHTML = innerSpan.innerHTML.replaceAll("@everyone", (e)=>{
+            div.children[2].children[0].innerHTML = innerSpan.innerHTML.replaceAll("@everyone", (e) => {
                 if (!isHistoryMsgs) ping()
                 return `<span style="background-color: yellow;">${e}</span>`
             })
             if (!isHistoryMsgs) notify()
-            
-        
+
+
             document.getElementById("chat_container").appendChild(div)
-            document.getElementById("chat_container").scrollTop += div.offsetHeight*1.4
-            
+            document.getElementById("chat_container").scrollTop += div.offsetHeight * 1.4
+
         }
 
         function submitToChat(msg) {
-            window.socket.emit("submitChat", JSON.stringify({msg:msg,key:localStorage.getItem("key")}))
+            window.socket.emit("submitChat", JSON.stringify({ msg: msg, key: localStorage.getItem("key") }))
         }
 
 
-        document.getElementById("submission").onclick = ()=>{
+        document.getElementById("submission").onclick = () => {
             if (document.getElementsByClassName("msg_input")[0].value == null || document.getElementsByClassName("msg_input")[0].value.trim() === '') return
             var msg = {
-                msg:document.getElementsByClassName("msg_input")[0].value,
-                username:document.getElementsByClassName("name_input")[0].value,
+                msg: document.getElementsByClassName("msg_input")[0].value,
+                username: document.getElementsByClassName("name_input")[0].value,
                 id: 0,
-                timestamp:(new Date()).getTime(),
+                timestamp: (new Date()).getTime(),
             }
             document.getElementsByClassName("msg_input")[0].value = ""
 
             submitToChat(msg)
         }
-        document.getElementById("msg_input").addEventListener("keyup",(e)=>{
-            if (e.code=="Enter"){
+        document.getElementById("msg_input").addEventListener("keyup", (e) => {
+            if (e.code == "Enter") {
                 document.getElementById("submission").click()
             }
         })
         async function connectWithFingerprint() {
-        console.log("connecting...")
-        var fp = await ThumbmarkJS.getFingerprint();
-        const socket = io(SERVER_URL, {
-            reconnection: true,
-            query: `fp=${fp}`,
-        });
-        window.socket = socket
-        socket.on("connect", async () => {
-            clearChat()
-            socket.emit("updateUsername", {"username":localStorage.getItem("username"),"joined": true})
-        });
-        socket.on("reconnect", () => {
-            clearChat()
-        });
+            console.log("connecting...")
+            var fp = await ThumbmarkJS.getFingerprint();
+            const socket = io(SERVER_URL, {
+                reconnection: true,
+                query: `fp=${fp}`,
+            });
+            window.socket = socket
+            socket.on("connect", async () => {
+                clearChat()
+                socket.emit("updateUsername", { "username": localStorage.getItem("username"), "joined": true })
+            });
+            socket.on("reconnect", () => {
+                clearChat()
+            });
 
-        socket.on("appendChat", (data)=>{
-            data = JSON.parse(data)
+            socket.on("appendChat", (data) => {
+                data = JSON.parse(data)
 
-            if (data.isHistoryMsgs) {
-                if (hasReceivedHistory) return 0
-            }
-            
-            for(let i=0;i<data.msgs.length;i++) {
-                appendToChat(data.msgs[i], data.isHistoryMsgs)
-            }
-            
-        })
+                if (data.isHistoryMsgs) {
+                    if (hasReceivedHistory) return 0
+                }
 
-        socket.on("updateUsersOnline", (count)=>{
-            document.getElementById("usersOnline").textContent = `Users Online: ${count}`
-        })
+                for (let i = 0; i < data.msgs.length; i++) {
+                    appendToChat(data.msgs[i], data.isHistoryMsgs)
+                }
 
-        socket.on("forceReload", ()=>{
-            location.reload()
-        })
-        socket.on("modifyUsername", (data)=>{
-            data = JSON.parse(data)
-            if (document.getElementById("name_input").value.replaceAll(" ","") == data.curName) {
+            })
+
+            socket.on("updateUsersOnline", (count) => {
+                document.getElementById("usersOnline").textContent = `Users Online: ${count}`
+            })
+
+            socket.on("forceReload", () => {
+                location.reload()
+            })
+            socket.on("modifyUsername", (data) => {
+                data = JSON.parse(data)
+                if (document.getElementById("name_input").value.replaceAll(" ", "") == data.curName) {
+                    document.getElementById("name_input").value = data.newName
+                    console.log(`username modified to ${data.newName}`)
+                }
+
+            })
+            socket.on("forceModifyUsername", (data) => {
+                data = JSON.parse(data)
                 document.getElementById("name_input").value = data.newName
-                console.log(`username modified to ${data.newName}`)
-            }
-            
-        })
-        socket.on("forceModifyUsername", (data)=>{
-            data = JSON.parse(data)
-            document.getElementById("name_input").value = data.newName
-            
-        })
-        socket.on("urBanned", (data)=>{
-            data = JSON.parse(data)
-            console.log(data)
-            let time = (data.timestamp+data.duration)-(new Date()).getTime()
-            alert(`ur banned for ${Math.floor(time / 1000)} seconds`)
-            
-        })
 
-        socket.on("noSlurs", ()=>{
-            alert(`No Slurs >:(`)
-            
-        })
-} 
-connectWithFingerprint()
+            })
+            socket.on("urBanned", (data) => {
+                data = JSON.parse(data)
+                console.log(data)
+                let time = (data.timestamp + data.duration) - (new Date()).getTime()
+                alert(`ur banned for ${Math.floor(time / 1000)} seconds`)
+
+            })
+
+            socket.on("noSlurs", () => {
+                alert(`No Slurs >:(`)
+
+            })
+        }
+        
+        connectWithFingerprint()
 
 
         window.isFocused = true
-        window.onfocus=()=>{window.isFocused=true;bdgr.value=undefined}
-        window.onblur=()=>{window.isFocused=false}
+        window.onfocus = () => { window.isFocused = true; bdgr.value = undefined }
+        window.onblur = () => { window.isFocused = false }
 
     </script>
 </body>
+
 </html>
