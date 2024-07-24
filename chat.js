@@ -8,21 +8,22 @@
 */
 
 class Chat {
-  constructor () {
+  constructor (config) {
+    this.config = config
     this.chatHistory = [];
   }
   
   getHistory() {
-    return chatHistory;
+    return this.chatHistory;
   }
   appendHistory(msg) {
-    chatHistory.push(msg);
-    if (LOG_TO_DISCORD) {
-      postMessageToDiscord(msg);
+    this.chatHistory.push(msg);
+    if (this.config.LOG_TO_DISCORD) {
+      this.postMessageToDiscord(msg);
     }
 
-    if (chatHistory.length > HISTORY_LENGTH) {
-      chatHistory.shift();
+    if (this.chatHistory.length > this.config.HISTORY_LENGTH) {
+      this.chatHistory.shift();
     }
   }
 
@@ -49,7 +50,7 @@ class Chat {
   }
 
   postMessageToDiscord(msg) {
-    let msgString = parseMsgString(msg);
+    let msgString = this.parseMsgString(msg);
     var params = {
       username: discordConnection.username,
       avatar_url: discordConnection.avatar,
@@ -58,7 +59,7 @@ class Chat {
         parse: [],
       },
     };
-    fetch(discordConnection.websocket, {
+    fetch(this.config.discordConnection.websocket, {
       method: "POST",
       headers: {
         "Content-type": "application/json",
@@ -77,7 +78,7 @@ class Chat {
     msg.username = msg.username.substring(0, 30).replaceAll(" ", "");
     msg.timestamp = USE_CLIENT_TIMESTAMPS ? msg.timestamp : new Date().getTime();
 
-    if (Commands.runText(msg.msg, socket, cmdKey)) {
+    if (Chat.cmds.runText(msg.msg, socket, cmdKey)) {
       return false;
     }
 
@@ -86,7 +87,7 @@ class Chat {
     }
 
     function r(string, id) {
-      return normaliseString(string) + `|${id}`;
+      return this.normaliseString(string) + `|${id}`;
     }
 
     let lastMsgs = getHistory();
@@ -148,13 +149,13 @@ class Chat {
       },
       "/help": {
         callback: function (cmdInputs, socket) {
-          let cmds = Object.keys(Commands.cmds),
+          let cmds = Object.keys(this.cmds),
             cList = [];
           for (let i = 0; i < cmds.length; i++) {
             const cmd = cmds[i];
             cList.push({
               msg: `- ${cmd}  ${
-                Commands.cmds[cmd].adminOnly ? "[ADMIN COMMAND]" : ""
+                this.cmds[cmd].adminOnly ? "[ADMIN COMMAND]" : ""
               }`,
               username: "SERVER",
               id: 0,
@@ -176,7 +177,7 @@ class Chat {
         callback: function (cmdInputs, socket) {
           console.log(cmdInputs);
           var text = "Current Users Online: \n";
-          for (const [key, value] of Object.entries(usersOnline)) {
+          for (const [key, value] of Object.entries(this.usersOnline)) {
             text += `[${key}] ${value.username}\r\n \r\n`;
           }
           var msg = {
@@ -235,11 +236,11 @@ class Chat {
       },
       "/getBans": {
         callback: function (e, socket) {
-          console.log(bans);
-          let banList = Object.keys(bans),
+          console.log(this.bans);
+          let banList = Object.keys(this.bans),
             cList = [];
           for (let i = 0; i < banList.length; i++) {
-            const ban = bans[banList[i]];
+            const ban = this.bans[banList[i]];
             cList.push({
               msg: `-  ${ban.id}, ${Math.floor(
                 (ban.duration - (new Date().getTime() - ban.timestamp)) / 1000,
@@ -281,8 +282,8 @@ class Chat {
             timestamp: new Date().getTime(),
             serverMsg: true,
           };
-          appendHistory(msg);
-          io.sockets.emit(
+          this.appendHistory(msg);
+          this.io.sockets.emit(
             "appendChat",
             JSON.stringify({
               msgs: [msg],
@@ -293,7 +294,7 @@ class Chat {
       },
       "/clearBan": {
         callback: function (e, socket) {
-          removeBan(e[0]);
+          this.removeBan(e[0]);
           var msg = {
             msg: `Unbanned User with id ${e[0]}`,
             username: "SERVER",
@@ -312,7 +313,7 @@ class Chat {
       },
       "/clearHistory": {
         callback: function (cmdInputs, socket) {
-          chatHistory = [];
+          this.chatHistory = [];
 
           var msg = {
             msg: `History cleared by admin`,
@@ -343,8 +344,8 @@ class Chat {
             timestamp: new Date().getTime(),
             serverMsg: true,
           };
-          appendHistory(msg);
-          io.sockets.emit(
+          this.appendHistory(msg);
+          this.io.sockets.emit(
             "appendChat",
             JSON.stringify({
               msgs: [msg],
@@ -355,7 +356,7 @@ class Chat {
       },
       "/forceReload": {
         callback: function (cmdInputs, socket) {
-          io.sockets.emit("forceReload");
+          this.io.sockets.emit("forceReload");
         },
         adminOnly: true,
       },
@@ -364,7 +365,7 @@ class Chat {
           console.log(
             `attempting to change username ${cmdInputs[0]} to ${cmdInputs[1]}`,
           );
-          io.sockets.emit(
+          this.io.sockets.emit(
             "modifyUsername",
             JSON.stringify({
               curName: cmdInputs[0],
@@ -400,8 +401,8 @@ class Chat {
         }
       }
       if (true) {
-        Object.keys(Commands.cmds).forEach((cmd) => {
-          var cmdOb = Commands.cmds[cmd];
+        Object.keys(this.cmds).forEach((cmd) => {
+          var cmdOb = this.cmds[cmd];
           if (cmdStr == cmd && (cmdOb.adminOnly ? isAdmin : true)) {
             foundCmd = true;
             if (execute) cmdOb.callback(cmdParams, socket);
