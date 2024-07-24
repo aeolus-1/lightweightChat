@@ -6,6 +6,16 @@ const server = http.createServer(app);
 const { createHash } = require("crypto");
 var fs = require("fs");
 
+require('dotenv').config()
+
+/*
+.env {
+  discord_url: string,
+  auth_user: string,
+  auth_pass: string,
+}
+*/
+
 /////////
 
 const auth = require("./auth");
@@ -16,10 +26,11 @@ var adminKey =
   "209df7d5282798c4e9f84a6320dd933b2cfe6049b9f189eb9b2ac2bdecf52944";
 
 const discordConnection = {
-  websocket: "",
+  websocket: process.env.discord_url||"",
   avatar: "",
   username: "",
 };
+
 
 const HISTORY_LENGTH = 40,
   USE_CLIENT_TIMESTAMPS = false,
@@ -41,6 +52,7 @@ const chat = new Chat(
     SHOW_JOIN_MESSAGES: SHOW_JOIN_MESSAGES,
     REPEATED_MESSAGES_LOOKBACK: REPEATED_MESSAGES_LOOKBACK,
     discordConnection:discordConnection,
+    adminKey:adminKey
   },
   io,
 );

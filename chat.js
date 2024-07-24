@@ -404,7 +404,7 @@ class Chat {
 
       if (cmdKey) {
         var hash = createHash("sha256").update(cmdKey).digest("hex");
-        if (hash == adminKey) {
+        if (hash == this.config.adminKey) {
           isAdmin = true;
         }
       }
