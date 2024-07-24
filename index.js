@@ -4,19 +4,16 @@ const app = express();
 const http = require("http");
 const server = http.createServer(app);
 const { createHash } = require("crypto");
-const list = require("./word_blacklist");
-var fs = require('fs');
+var fs = require("fs");
 
 /////////
 
 const auth = require("./auth");
-const Chat = require('./chat');
+const Chat = require("./chat");
 
 /////////
 var adminKey =
   "209df7d5282798c4e9f84a6320dd933b2cfe6049b9f189eb9b2ac2bdecf52944";
-
-
 
 const discordConnection = {
   websocket: "",
@@ -36,8 +33,17 @@ const io = require("socket.io")(server, {
   },
 });
 
-var usersOnline = {};
-var bans = {};
+const chat = new Chat(
+  {
+    HISTORY_LENGTH: HISTORY_LENGTH,
+    USE_CLIENT_TIMESTAMPS: USE_CLIENT_TIMESTAMPS,
+    LOG_TO_DISCORD: LOG_TO_DISCORD,
+    SHOW_JOIN_MESSAGES: SHOW_JOIN_MESSAGES,
+    REPEATED_MESSAGES_LOOKBACK: REPEATED_MESSAGES_LOOKBACK,
+    discordConnection:discordConnection,
+  },
+  io,
+);
 
 app.use(express.static("public"));
 
@@ -45,16 +51,14 @@ app.use(auth);
 app.get("/", (req, res) => {
   console.log(req.user);
   res.statusCode = 200;
-  res.end(fs.readFileSync('index.html'));
+  res.end(fs.readFileSync("index.html"));
 });
-
-
 
 io.on("connection", async (socket) => {
   var fp = socket.handshake.query.fp;
   if (fp) {
     hashedFp = createHash("sha256").update(fp).digest("hex").substring(0, 9);
-    if (bans[hashedFp] == undefined) {
+    if (chat.bans[hashedFp] == undefined) {
       socket.chat_id = hashedFp;
     } else {
       socket.emit("urBanned", JSON.stringify(bans[hashedFp]));
@@ -66,14 +70,14 @@ io.on("connection", async (socket) => {
   } else {
     return socket.disconnect();
   }
-  usersOnline[socket.chat_id] = {
+  chat.usersOnline[socket.chat_id] = {
     username: "?",
   };
-  io.sockets.emit("updateUsersOnline", Object.keys(usersOnline).length);
+  io.sockets.emit("updateUsersOnline", Object.keys(chat.usersOnline).length);
   socket.emit(
     "appendChat",
     JSON.stringify({
-      msgs: getHistory(),
+      msgs: chat.getHistory(),
       isHistoryMsgs: true,
     }),
   );
@@ -81,8 +85,11 @@ io.on("connection", async (socket) => {
   socket.on("updateUsername", (data) => {
     if (data.username != null) {
       try {
-        usersOnline[socket.chat_id].username = data.username.substring(0, 30);
-        usersOnline[socket.chat_id].socket = socket;
+        chat.usersOnline[socket.chat_id].username = data.username.substring(
+          0,
+          30,
+        );
+        chat.usersOnline[socket.chat_id].socket = socket;
       } catch (err) {
         console.log("why is this happening");
         console.log(data);
@@ -90,7 +97,7 @@ io.on("connection", async (socket) => {
     }
     if (data.joined && SHOW_JOIN_MESSAGES) {
       var msg = {
-        msg: `${usersOnline[socket.chat_id].username} has joined`,
+        msg: `${chat.usersOnline[socket.chat_id].username} has joined`,
         username: "SERVER",
         id: 0,
         timestamp: new Date().getTime(),
@@ -107,15 +114,15 @@ io.on("connection", async (socket) => {
   socket.on("submitChat", (data) => {
     // mine's more professional
     data = JSON.parse(data);
-    data.msg = verifyMsg(data.msg, socket, data.key);
+    data.msg = chat.verifyMsg(data.msg, socket, data.key);
     console.log(data);
-    if (containsSlurs(data.msg.msg)) {
+    if (chat.containsSlurs(data.msg.msg)) {
       console.log(`${data.msg.username}(${data.msg.id}) tried to say a slur`);
       return socket.emit("noSlurs");
     }
 
     if (data.msg) {
-      appendHistory(data.msg);
+      chat.appendHistory(data.msg);
 
       io.sockets.emit(
         "appendChat",
@@ -128,7 +135,7 @@ io.on("connection", async (socket) => {
   });
 
   socket.on("disconnect", () => {
-    io.sockets.emit("updateUsersOnline", Object.keys(usersOnline).length);
+    io.sockets.emit("updateUsersOnline", Object.keys(chat.usersOnline).length);
     if (false) {
       var msg = {
         msg: `${usersOnline[socket.chat_id].username} has disconnected`,
@@ -144,15 +151,15 @@ io.on("connection", async (socket) => {
         }),
       );
     }
-    delete usersOnline[socket.chat_id];
+    delete chat.usersOnline[socket.chat_id];
   });
 });
 //harry was here
 setInterval(() => {
-  updateBans();
+  chat.updateBans();
 }, 1000);
 
-appendHistory({
+chat.appendHistory({
   msg: `Server restarted`,
   username: "SERVER",
   id: 0,

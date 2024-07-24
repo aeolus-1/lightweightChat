@@ -1,3 +1,6 @@
+require('dotenv').config()
+
+
 function auth(req, res, next) {
     var authHeader = req.headers.authorization;
     if (!authHeader) {
@@ -14,7 +17,7 @@ function auth(req, res, next) {
     var username = auth[0];
     var password = auth[1];
     console.log(username,password)
-    if (username == "user3" && password == "pass") {
+    if (username == process.env.auth_user && password == process.env.auth_pass) {
         next();
     } else {
         var err = new Error("You are not authenticated");

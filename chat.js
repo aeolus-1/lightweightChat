@@ -8,9 +8,17 @@
 */
 
 class Chat {
-  constructor (config) {
+  constructor (config, io) {
     this.config = config
+    this.io = io
+
+    this.blacklistedWords = require("./word_blacklist");
+
+    
     this.chatHistory = [];
+
+    this.usersOnline = [];
+    this.bans = [];
   }
   
   getHistory() {
@@ -44,7 +52,7 @@ class Chat {
     msg = msg.replace("l", "i");
     msg = msg.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     console.log(`Message: ${msg}`);
-    if (list.slurs.some((v) => msg.includes(v))) {
+    if (this.blacklistedWords.slurs.some((v) => msg.includes(v))) {
       return true;
     }
   }
@@ -52,8 +60,8 @@ class Chat {
   postMessageToDiscord(msg) {
     let msgString = this.parseMsgString(msg);
     var params = {
-      username: discordConnection.username,
-      avatar_url: discordConnection.avatar,
+      username: this.config.discordConnection.username,
+      avatar_url: this.config.discordConnection.avatar,
       content: msgString,
       allowed_mentions: {
         parse: [],
@@ -76,9 +84,9 @@ class Chat {
     msg.msg = msg.msg.substring(0, 300);
     msg.id = socket.chat_id;
     msg.username = msg.username.substring(0, 30).replaceAll(" ", "");
-    msg.timestamp = USE_CLIENT_TIMESTAMPS ? msg.timestamp : new Date().getTime();
+    msg.timestamp = this.config.USE_CLIENT_TIMESTAMPS ? msg.timestamp : new Date().getTime();
 
-    if (Chat.cmds.runText(msg.msg, socket, cmdKey)) {
+    if (this.runTextAsCommands(msg.msg, socket, cmdKey)) {
       return false;
     }
 
@@ -86,13 +94,13 @@ class Chat {
       return false;
     }
 
-    function r(string, id) {
+    let r = (string, id)=>{
       return this.normaliseString(string) + `|${id}`;
     }
 
-    let lastMsgs = getHistory();
+    let lastMsgs = this.getHistory();
     lastMsgs = lastMsgs.slice(
-      lastMsgs.length - REPEATED_MESSAGES_LOOKBACK,
+      lastMsgs.length - this.config.REPEATED_MESSAGES_LOOKBACK,
       lastMsgs.length,
     );
     lastMsgs = lastMsgs.map((e) => {
@@ -113,7 +121,7 @@ class Chat {
       timestamp: new Date().getTime(),
     };
 
-    let user = usersOnline[id];
+    let user = this.usersOnline[id];
     if (!user) return;
     if (user.socket != undefined) {
       user.socket.emit("urBanned", JSON.stringify(bans[id]));
@@ -121,8 +129,8 @@ class Chat {
     }
   }
   updateBans() {
-    for (let i = 0; i < Object.keys(bans).length; i++) {
-      const ban = bans[Object.keys(bans)[i]];
+    for (let i = 0; i < Object.keys(this.bans).length; i++) {
+      const ban = this.bans[Object.keys(this.bans)[i]];
       let timeSince = new Date().getTime() - ban.timestamp;
       if (timeSince >= ban.duration) {
         delete bans[ban.id];
@@ -401,8 +409,8 @@ class Chat {
         }
       }
       if (true) {
-        Object.keys(this.cmds).forEach((cmd) => {
-          var cmdOb = this.cmds[cmd];
+        Object.keys(Chat.cmds).forEach((cmd) => {
+          var cmdOb = Chat.cmds[cmd];
           if (cmdStr == cmd && (cmdOb.adminOnly ? isAdmin : true)) {
             foundCmd = true;
             if (execute) cmdOb.callback(cmdParams, socket);
